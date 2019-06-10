@@ -21,7 +21,7 @@ shinyUI(fluidPage(
             sliderInput("prob_c", "Probality of C",
                         min = 0, max = 100, value = 5),
             sliderInput("cycles", "Time",
-                        min = 0, max = 5000, value = 3000),
+                        min = 0, max = 10000, value = 3000),
             sliderInput("reps", "Repeats",
                         min = 0, max = 100, value = 10)
         ),
