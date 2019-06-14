@@ -4,6 +4,7 @@ source("repeat_simulation.R")
 source("rep_plot.R")
 source("simulateMM.R")
 source("plotMM.R")
+source("simulateMMwithI.R")
 
 server = function(input, output) {
     
@@ -27,6 +28,18 @@ server = function(input, output) {
         out
     })
     
+    spectrum_MMI = reactive({
+        out = simulateMMwithI(e = input$e_MMI,
+                              s_axis = input$s_MMI,
+                              i = input$i_MMI,
+                              k1 = input$k1,
+                              k_1 = input$k_1,
+                              k2 = input$k2,
+                              k3 = input$k3,
+                              k_3 = input$k_3)
+        out
+    })    
+    
     output$graph = renderPlot({
         rep_plot(file = spectrum(),
                  e_average_display = 1 %in% input$display,
@@ -37,5 +50,9 @@ server = function(input, output) {
     
     output$graph_MM = renderPlot({
         plotMM(file = spectrum_MM())
+    })
+    
+    output$graph_MMI = renderPlot({
+        plotMM(file = spectrum_MMI())
     })
 }

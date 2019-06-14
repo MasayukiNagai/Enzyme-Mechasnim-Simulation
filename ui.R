@@ -43,6 +43,28 @@ ui<-fluidPage(
                                       ),
                                       mainPanel(
                                         plotOutput("graph_MM", height = "600px"))
-                                      )
+                                      ),
+                         tabPanel("Michaelis-Menten with Inhibitors",
+                                  sidebarPanel(
+                                    sliderInput("e_MMI", "E: ",
+                                                min = 0, max = 100, value = 10),
+                                    sliderInput("s_MMI", "S: ",
+                                                min = 0, max = 1000, value = 300),
+                                    sliderInput("i_MMI", "I: ",
+                                                min = 0, max = 1000, value = 100),
+                                    sliderInput("k1", "k1",
+                                                min = 0, max = 100, value = 100),
+                                    sliderInput("k_1", "k_1",
+                                                min = 0, max = 100, value = 20),
+                                    sliderInput("k2", "k2",
+                                                min = 0, max = 100, value = 5),
+                                    sliderInput("k3", "k3",
+                                                min = 0, max = 100, value = 15),
+                                    sliderInput("k_3", "k_3",
+                                                min = 0, max = 100, value = 15)
+                                  ),
+                                  mainPanel(
+                                    plotOutput("graph_MMI", height = "600px"))
+                                  )
    )
 )
