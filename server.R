@@ -38,7 +38,7 @@ server = function(input, output) {
                               k3 = input$k3,
                               k_3 = input$k_3)
         out
-    })    
+    })
     
     output$graph = renderPlot({
         rep_plot(file = spectrum(),
@@ -47,11 +47,11 @@ server = function(input, output) {
                  es_average_display = 3 %in% input$display,
                  p_average_display = 4 %in% input$display)
     })
-    
+
     output$graph_MM = renderPlot({
         plotMM(file = spectrum_MM())
     })
-    
+
     output$graph_MMI = renderPlot({
         plotMM(file = spectrum_MMI())
     })

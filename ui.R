@@ -39,7 +39,9 @@ ui<-fluidPage(
                                           sliderInput("k_1", "k-1",
                                                       min = 0, max = 100, value = 20),
                                           sliderInput("k2", "k2",
-                                                      min = 0, max = 100, value = 5)
+                                                      min = 0, max = 100, value = 5),
+                                          sliderInput("time", "time",
+                                                      min = 0, max = 1000, value = 500)
                                       ),
                                       mainPanel(
                                         plotOutput("graph_MM", height = "600px"))
@@ -65,6 +67,8 @@ ui<-fluidPage(
                                   ),
                                   mainPanel(
                                     plotOutput("graph_MMI", height = "600px"))
-                                  )
+                         )
+                             
+                         
    )
 )
