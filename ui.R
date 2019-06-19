@@ -67,7 +67,25 @@ ui<-fluidPage(
                                   ),
                                   mainPanel(
                                     plotOutput("graph_MMI", height = "600px"))
-                         )
+                         ),
+                         
+                         tabPanel("Michaelis-Menten Experiments",
+                                  sidebarPanel(
+                                    sliderInput("s_ex", "S: ",
+                                                min = 0, max = 300, value = 150),
+                                    sliderInput("k1", "k1",
+                                                min = 0, max = 100, value = 100),
+                                    sliderInput("k_1", "k_1",
+                                                min = 0, max = 100, value = 20),
+                                    sliderInput("k2", "k2",
+                                                min = 0, max = 100, value = 5),
+                                    sliderInput("cycles", "Cycles: ",
+                                                min = 0, max = 2000, value = 1000),
+                                    actionButton("submit", "Submit")
+                                  ),
+                                  mainPanel(
+                                    plotOutput("graph_EX", height = "400px"))
+                                  )
                              
                          
    )

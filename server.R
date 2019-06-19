@@ -40,6 +40,16 @@ server = function(input, output) {
         out
     })
     
+    # spectrum_EX = eventReactive(input$submit,{
+    #     out = 
+    # })
+    # 
+    # slopes = c()
+    # slopes = eventReactive(input$submit, {
+    #     out = rep_simple_simulation(s = input$s_ex)
+    #     c(slopes, out$slope)
+    # })
+    
     output$graph = renderPlot({
         rep_plot(file = spectrum(),
                  e_average_display = 1 %in% input$display,
@@ -54,5 +64,9 @@ server = function(input, output) {
 
     output$graph_MMI = renderPlot({
         plotMM(file = spectrum_MMI())
+    })
+    
+    output$graph_EX = renderPlot({
+        
     })
 }

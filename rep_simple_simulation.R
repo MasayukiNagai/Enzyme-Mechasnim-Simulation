@@ -23,6 +23,8 @@ rep_simple_simulation = function(reps = 10,
   maxline = which(slopes == max(slopes))
   
   out = list("repeats" = reps,
+             "s" = s,
+             "solvent" = solvent,
              "time" = rep_results[[1]]$time,
              "s_reps" = s_reps,
              "es_reps"= es_reps,

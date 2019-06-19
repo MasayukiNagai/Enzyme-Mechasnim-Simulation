@@ -13,29 +13,29 @@ source("simple_simulation.R")
 source("rep_simple_simulation.R")
 source("rep_simple_plot.R")
 
-e = 10
-s = 150
-es = 0
-p = 0
-prob_a = 100
-prob_b = 20
-prob_c = 5
-cycles = 1000
-reps = 10
-solvent = 150
-k1 = 100
-k_1 = 0
-k2 = 100
-
-
-file = basic_mechanism(e, s, es, p, prob_a, prob_b, prob_c, cycles)
-simple_plot(file)
-
-rep_file = repeat_simulation(reps, e, s, es, p, prob_a, prob_b, prob_c, cycles)
-rep_plot(rep_file)
-
-simfile = simulateMM()
-plotMM(simfile)
+# e = 10
+# s = 150
+# es = 0
+# p = 0
+# prob_a = 100
+# prob_b = 20
+# prob_c = 5
+# cycles = 1000
+# reps = 10
+# solvent = 150
+# k1 = 100
+# k_1 = 0
+# k2 = 100
+# 
+# 
+# file = basic_mechanism(e, s, es, p, prob_a, prob_b, prob_c, cycles)
+# simple_plot(file)
+# 
+# rep_file = repeat_simulation(reps, e, s, es, p, prob_a, prob_b, prob_c, cycles)
+# rep_plot(rep_file)
+# 
+# simfile = simulateMM()
+# plotMM(simfile)
 # 
 # exp1 = simple_simulate(300, 0)
 # exp2 = simple_simulate(200, 100)
@@ -59,11 +59,17 @@ plotMM(simfile)
 # abline(line13[1], line13[2], col = "blue")
 # abline(line14[1], line14[2], col = "navy")
 
-# exp1 = rep_simple_simulation(reps, 100, 50)
-# exp2 = rep_simple_simulation(reps, 200, 100)
-# exp3 = rep_simple_simulation(reps, 400, 200)
-# exp4 = rep_simple_simulation(reps, 1000, 500)
-# exp5 = rep_simple_simulation(reps, 300, 0)
+# reps = 10
+# exp1 = rep_simple_simulation(reps, 500, 0)
+# exp2 = rep_simple_simulation(reps, 450, 50)
+# exp3 = rep_simple_simulation(reps, 400, 100)
+# exp4 = rep_simple_simulation(reps, 350, 150)
+# exp5 = rep_simple_simulation(reps, 300, 200)
+# exp6 = rep_simple_simulation(reps, 250, 250)
+# exp7 = rep_simple_simulation(reps, 200, 300)
+# exp8 = rep_simple_simulation(reps, 150, 350)
+# exp9 = rep_simple_simulation(reps, 100, 400)
+# exp10 = rep_simple_simulation(reps, 50, 450)
 # rep_simple_plot(exp1)
 # rep_simple_plot(exp2)
 # rep_simple_plot(exp3)
@@ -87,6 +93,13 @@ plotMM(simfile)
 # abline(line13$coefficients[1], line13$coefficients[2], col = "blue")
 # abline(line14$coefficients[1], line14$coefficients[2], col = "navy")
 # abline(line15$coefficients[1], line15$coefficients[2], col = "green")
+# 
+# slopes = c(exp1$slope,exp2$slope,exp3$slope,exp4$slope,exp5$slope,exp6$slope,exp7$slope,exp8$slope,exp9$slope,exp10$slope)
+# substrates = c(exp1$s, exp2$s,exp3$s,exp4$s,exp5$s,exp6$s,exp7$s,exp8$s,exp9$s,exp10$s)
+# solvents = c(exp1$solvent, exp2$solvent,exp3$solvent,exp4$solvent,exp5$solvent,exp6$solvent,exp7$solvent,exp8$solvent,exp9$solvent,exp10$solvent)
+# cons = substrates/(substrates + solvents)
+
+
 
   
 # proc.time() - ptm
