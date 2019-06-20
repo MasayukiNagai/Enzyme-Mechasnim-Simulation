@@ -71,19 +71,23 @@ ui<-fluidPage(
                          
                          tabPanel("Michaelis-Menten Experiments",
                                   sidebarPanel(
-                                    sliderInput("s_ex", "S: ",
-                                                min = 0, max = 300, value = 150),
-                                    sliderInput("k1", "k1",
-                                                min = 0, max = 100, value = 100),
-                                    sliderInput("k_1", "k_1",
-                                                min = 0, max = 100, value = 20),
-                                    sliderInput("k2", "k2",
-                                                min = 0, max = 100, value = 5),
-                                    sliderInput("cycles", "Cycles: ",
+                                    sliderInput("s_ex", "S (μM)",
+                                                min = 0, max = 10, value = 1, step = 0.5),
+                                    sliderInput("e_ex", "E (μM)",
+                                                min = 0, max = 0.10, value = 0.02, step = 0.01),
+                                    sliderInput("k1_ex", "k1 (/(μM*s))",
                                                 min = 0, max = 2000, value = 1000),
-                                    actionButton("submit", "Submit")
+                                    sliderInput("k_1_ex", "k_1 (/s)",
+                                                min = 0, max = 2000, value = 950),
+                                    sliderInput("k2_ex", "k2 (/s)",
+                                                min = 0, max = 100, value = 50),
+                                    sliderInput("time_ex", "Time (s)",
+                                                min = 0, max = 100, value = 30),
+                                    actionButton("initial_button", "Decide Initinal States"),
+                                    actionButton("upgrade_button", "Upgrade S")
                                   ),
                                   mainPanel(
+                                    plotOutput("graph_P", height = "400px"),
                                     plotOutput("graph_EX", height = "400px"))
                                   )
                              

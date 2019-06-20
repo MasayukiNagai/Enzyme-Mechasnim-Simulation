@@ -5,6 +5,9 @@ source("rep_plot.R")
 source("simulateMM.R")
 source("plotMM.R")
 source("simulateMMwithI.R")
+source("lambertMM.R")
+source("plot_lambert.R")
+source("plot_lambertMM.R")
 
 server = function(input, output) {
     
@@ -40,15 +43,32 @@ server = function(input, output) {
         out
     })
     
-    # spectrum_EX = eventReactive(input$submit,{
-    #     out = 
+    # spectrum_initial = observeEvent(input$initial_button, {
+    #     out = list("e" = input$e_ex,
+    #                "k1" = input$k1,
+    #                "k_1" = input$k_1,
+    #                "k2" = input$k2,
+    #                "time" = input$time)
+    #     out
     # })
-    # 
-    # slopes = c()
-    # slopes = eventReactive(input$submit, {
-    #     out = rep_simple_simulation(s = input$s_ex)
-    #     c(slopes, out$slope)
-    # })
+    
+    substrates = character()
+    values = reactiveValues(df = data.frame("substrates" = substrates))
+    newEntry = observeEvent(input$upgrade_button, {
+        substrates_new = c(values$df$substrates, input$s_ex)
+        values$df = data.frame("substrates" = substrates_new)
+    })
+    
+    spectrumEX = reactive({
+        out = lambertMM(file = values$df,
+                        "e" = input$e_ex,
+                        "k1" = input$k1_ex,
+                        "k_1" = input$k_1_ex,
+                        "k2" = input$k2_ex,
+                        "time" = input$time_ex)
+        out
+    })
+
     
     output$graph = renderPlot({
         rep_plot(file = spectrum(),
@@ -66,7 +86,10 @@ server = function(input, output) {
         plotMM(file = spectrum_MMI())
     })
     
+    output$graph_P = renderPlot({
+        plot_lambert(file = spectrumEX())
+    })
+    
     output$graph_EX = renderPlot({
-        
     })
 }
