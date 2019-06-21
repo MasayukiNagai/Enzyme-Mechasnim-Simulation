@@ -84,7 +84,9 @@ ui<-fluidPage(
                                     sliderInput("time_ex", "Time (s)",
                                                 min = 0, max = 100, value = 30),
                                     actionButton("initial_button", "Decide Initinal States"),
-                                    actionButton("upgrade_button", "Upgrade S")
+                                    actionButton("upgrade_button", "Upgrade S"),
+                                    checkboxInput("theory", "Display Theoretical Values", value = FALSE)
+                                    
                                   ),
                                   mainPanel(
                                     plotOutput("graph_P", height = "400px"),

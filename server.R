@@ -59,7 +59,7 @@ server = function(input, output) {
         values$df = data.frame("substrates" = substrates_new)
     })
     
-    spectrumEX = reactive({
+    spectrum_EX = reactive({
         out = lambertMM(file = values$df,
                         "e" = input$e_ex,
                         "k1" = input$k1_ex,
@@ -87,9 +87,12 @@ server = function(input, output) {
     })
     
     output$graph_P = renderPlot({
-        plot_lambert(file = spectrumEX())
+        plot_lambert(file = spectrum_EX(),
+                     display_theoretical_values = input$theory)
     })
     
     output$graph_EX = renderPlot({
+        plot_lambertMM(file = spectrum_EX(),
+                       display_theoretical_values = input$theory)
     })
 }
