@@ -1,4 +1,7 @@
 library(shiny)
+library(VGAM)
+library(stats4)
+library(splines)
 
 source("repeat_simulation.R")
 source("rep_plot.R")
@@ -43,15 +46,6 @@ server = function(input, output) {
         out
     })
     
-    # spectrum_initial = observeEvent(input$initial_button, {
-    #     out = list("e" = input$e_ex,
-    #                "k1" = input$k1,
-    #                "k_1" = input$k_1,
-    #                "k2" = input$k2,
-    #                "time" = input$time)
-    #     out
-    # })
-    
     substrates = character()
     values = reactiveValues(df = data.frame("substrates" = substrates))
     newEntry = observeEvent(input$upgrade_button, {
@@ -62,10 +56,15 @@ server = function(input, output) {
     spectrum_EX = reactive({
         out = lambertMM(file = values$df,
                         "e" = input$e_ex,
+                        "i" = input$i_ex,
                         "k1" = input$k1_ex,
                         "k_1" = input$k_1_ex,
                         "k2" = input$k2_ex,
-                        "time" = input$time_ex)
+                        "ki1" = input$ki1_ex,
+                        "ki2" = input$ki2_ex,
+                        "time" = input$time_ex,
+                        "sd" = input$sd_ex,
+                        "game" = input$games)
         out
     })
 

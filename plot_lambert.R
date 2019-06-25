@@ -1,8 +1,13 @@
 source("change_color.R")
 plot_lambert = function(file, display_theoretical_values = FALSE){
   
-  #adjust smax depending on the max of substrate value that users can choose (check ui)
-  s_max = 10
+  if(length(file$pt) == 0){
+    s_max = 1
+  }
+  else{
+    s_max = 1.2 * max(file$substrates)
+  }
+
   pinf = file$pinf_ratio * s_max
   pt_max = pinf - file$kmapp * lambertW({(pinf/file$kmapp) * exp((pinf - file$vapp * file$time)/file$kmapp)})
   ymax = 1.1 * pt_max
