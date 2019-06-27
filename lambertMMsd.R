@@ -1,10 +1,14 @@
-lambertMM = function(file, e = 0.02, i = 0.30,
+lambertMMsd = function(file, e = 0.02, i = 0.30,
                      k1 = 1000, k_1 = 950, k2 = 50, km = 1, ki1 = 0.20, ki2 = 0.15,
                      pinf_ratio = 0.9818, time = 20, sd = 0,
                      game = c("Normal", "Competitive", "Uncompetitive", "Mixed")){
+  
+  e = e * 10^(-6)
+  sd = e * 5
+
   game = match.arg(game)
   t = seq(0, time, length.out = 50)
-  # km = (k_1 + k2)/k1
+  km = (k_1 + k2)/k1
   v_max = k2 * e
   
   if(game == "Competitive"){
