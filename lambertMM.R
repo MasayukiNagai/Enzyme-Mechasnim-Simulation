@@ -1,10 +1,12 @@
 lambertMM = function(file, e = 0.02, i = 0.30,
-                     k1 = 1000, k_1 = 950, k2 = 50, km = 1, ki1 = 0.20, ki2 = 0.15,
-                     pinf_ratio = 0.9818, time = 20, sd = 0,
+                     k1 = 1000, k_1 = 950, k2 = 50, km = NULL, ki1 = 0.20, ki2 = 0.15,
+                     pinf_ratio = 0.9818, time = 20, sd = 0, km_pre = 1, vmax_pre = 0.5, 
                      game = c("Normal", "Competitive", "Uncompetitive", "Mixed")){
   game = match.arg(game)
   t = seq(0, time, length.out = 50)
-  # km = (k_1 + k2)/k1
+  if(is.null(km)){
+    km = (k_1 + k2)/ k1
+  }
   v_max = k2 * e
   
   if(game == "Competitive"){
@@ -26,8 +28,6 @@ lambertMM = function(file, e = 0.02, i = 0.30,
 
   pt = rep(list(character(length(t))), length(file$substrates))
   pt_error = rep(list(character(length(t))), length(file$substrates))
-  # tangent_lines = rep(list(list()), length(file$substrartes))
-  # tangent_lines_errors = rep(list(list()), length(file$substrartes))
   slopes = as.numeric(character(length(file$substrates)))
   slopes_error = as.numeric(character(length(file$substrates)))
   intercepts = as.numeric(character(length(file$substrates)))
@@ -48,7 +48,13 @@ lambertMM = function(file, e = 0.02, i = 0.30,
     pt = as.data.frame(matrix(unlist(pt), nrow = length(unlist(pt[1]))))
     pt_error = as.data.frame(matrix(unlist(pt_error), nrow = length(unlist(pt_error[1]))))
   }
-  
+
+  error = NA
+  if(length(file$substrates) != 0){
+    theo = vapp * file$substrates/(kmapp + file$substrates)
+    exp = vmax_pre * file$substrates/(km_pre + file$substrates)
+    error = sum(sqrt((theo - exp)^2))/e
+  }
   
   out = list("pt" = pt,
              "pt_error" = pt_error,
@@ -65,11 +71,12 @@ lambertMM = function(file, e = 0.02, i = 0.30,
              "substrates" = file$substrates,
              "e" = e,
              "i" = i,
-             # "tangent_lines" = tangent_lines,
-             # "tangent_lines_errors" = tangent_lines_errors
              "slopes" = slopes,
              "intercepts" = intercepts,
              "slopes_error" = slopes_error,
-             "intercepts_error" = intercepts_error
+             "intercepts_error" = intercepts_error,
+             "km_pre" = km_pre,
+             "vmax_pre" = vmax_pre,
+             "error" = error
   )
 }

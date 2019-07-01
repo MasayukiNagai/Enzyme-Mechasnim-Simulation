@@ -118,20 +118,22 @@ ui<-fluidPage(
                                   sidebarPanel(
                                     width = 3,
                                     selectInput("e_4", "[E] (M)",
-                                                choices = list("0.1 M" = 1 * 10^(-1), "0.02 M" = 2 * 10^(-2), "100 μM" = 100 * 10^(-6), "10 μM" = 10 * 10^(-6)),
+                                                choices = list("100 μM" = 100 * 10^(-6), "10 μM" = 10 * 10^(-6)),
                                                 selected = 2 * 10^(-2)),
                                     sliderInput("s_4", "S (M)",
                                                 min = 0, max = 10, value = 1, step = 0.01),
                                     actionButton("add_s_4", "Do an experiment"),
                                     sliderInput("time_4", "Time (s)",
-                                                min = 0, max = 1000, value = 20, step = 1),
-                                    checkboxInput("theory_4", "Display Theoretical Values", value = FALSE),
+                                                min = 0, max = 1000, value = 1000, step = 1),
                                     hr(),
-                                    checkboxInput("fit_4", "Predict values", value = FALSE),
+                                    checkboxInput("fit_4", "Predict values (blue)", value = FALSE),
                                     sliderInput("km_4", "Km[M]",
-                                                min = 0, max = 10, value = 1, step = 0.1),
+                                                min = 0, max = 10, value = 2, step = 0.01),
                                     sliderInput("vmax_4", "Vmax [M/s]",
-                                                min = 0, max = 2, value = 0.5, step = 0.1)
+                                                min = 0, max = 0.01 , value = 0.01, step = 0.0001),
+                                    verbatimTextOutput("error_4"),
+                                    checkboxInput("theory_4", "Display theoretical values (red)", value = FALSE),
+                                    verbatimTextOutput("theory_values")
                                   ),
                                   mainPanel(
                                     plotOutput("graph_Pt_4", height = "400px"),

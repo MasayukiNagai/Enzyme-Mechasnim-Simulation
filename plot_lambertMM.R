@@ -1,5 +1,5 @@
 plot_lambertMM = function(file, display_theoretical_values = FALSE,
-                          km_pre = 1, vmax_pre = 0.5, display_fit_values = FALSE){
+                          display_fit_values = FALSE){
   
   if(length(file$pt) == 0){
     s_max = 1
@@ -32,7 +32,7 @@ plot_lambertMM = function(file, display_theoretical_values = FALSE,
       abline(h = file$vapp, lwd = 2, lty = 2, col = "red")
     }
     if(display_fit_values){
-      curve(vmax_pre * x/(km_pre + x), 0, s_max, add = TRUE, type = "l", lwd = 2, lty = 2, col = "blue")
+      curve(file$vmax_pre * x/(file$km_pre + x), 0, s_max, add = TRUE, type = "l", lwd = 2, lty = 2, col = "blue")
     }
   }
 }

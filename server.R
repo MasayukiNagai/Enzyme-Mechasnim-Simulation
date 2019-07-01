@@ -278,7 +278,10 @@ server = function(input, output, session) {
         out = lambertMM(file = values_4$df,
                         "e" = as.numeric(input$e_4),
                         "time" = input$time_4,
-                        "sd" = 0)
+                        "km" = 1,
+                        "sd" = 0,
+                        "km_pre" = input$km_4,
+                        "vmax_pre" = input$vmax_4)
     })
     
     output$graph_Pt_4 = renderPlot({
@@ -289,8 +292,24 @@ server = function(input, output, session) {
     output$graph_MM_4 = renderPlot({
         plot_lambertMM(file = spectrum_4(),
                        display_theoretical_values = input$theory_4,
-                       display_fit_values = input$fit_4,
-                       km_pre = input$km_4,
-                       vmax_pre = input$vmax_4)
+                       display_fit_values = input$fit_4)
+    })
+    
+    output$error_4 = renderText({
+        error = round(spectrum_4()$error,2)
+        paste("Error:", error)
+    })
+    
+    output$theory_values = renderText({
+        file =  spectrum_4()
+        km = file$kmapp
+        vmax = file$vapp
+        paste("Theorectical values")
+        if(input$theory_4){
+            paste("Km:", km, ",", "Vmax:", vmax)
+        }
+        else{
+            paste("Km:", " ", ",",  "Vmax:", " ")
+        }
     })
 }
