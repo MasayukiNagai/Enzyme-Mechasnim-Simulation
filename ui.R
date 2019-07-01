@@ -40,31 +40,6 @@ ui<-fluidPage(
                                     plotOutput("graph_MM", height = "400px"))
                                   ),
                          
-                         tabPanel("P-t Graph 1",
-                                  sidebarPanel(
-                                    htmlOutput("instruction_Pt")
-                                  ),
-                                  mainPanel(
-                                    plotOutput("graph_Pt_1", height = "500px"),
-                                    fluidRow(
-                                      column(4, offset = 1,
-                                             wellPanel(
-                                               selectInput("e_1", "[E] (M)",
-                                                           choices = list("0.1 M" = 1 * 10^(-1), "0.02 M" = 2 * 10^(-2), "100 μM" = 100 * 10^(-6), "10 μM" = 10 * 10^(-6)),
-                                                           selected = 2 * 10^(-2)),
-                                               sliderInput("s_1", "[S] (M)",
-                                                           min = 0, max = 10, value = 1, step = 0.01),
-                                               actionButton("add_s_1", "Do an experiment"),
-                                               sliderInput("time_1", "Time(s)",
-                                                           min = 1, max = 10000, value = 20, step = 10),
-                                               checkboxInput("theory_1", "Display Theoretical Values", value = FALSE)
-                                             )
-                                             ),
-                                      column(2, offset = 1,
-                                             tableOutput("table_Pt_1")
-                                             )
-                                    )
-                                   )),
                          
                          tabPanel("P-t Graph 2",
                                   fluidRow(
@@ -87,31 +62,13 @@ ui<-fluidPage(
                                   ),
                                     fluidRow(
                                       column(3, align = "center",
-                                             wellPanel(tableOutput("table_Pt_2"))
+                                             wellPanel(tableOutput("table_Pt_2"), style = "background: lightgrey")
                                              
                                       ),
                                       column(8,
                                              htmlOutput("instruction_Pt_2")
                                       )
                                     )
-                                  ),
-                         
-                         tabPanel("P-t and MM 1",
-                                  sidebarPanel(
-                                    width = 3,
-                                    selectInput("e_3", "[E] (M)",
-                                                choices = list("0.1 M" = 1 * 10^(-1), "0.02 M" = 2 * 10^(-2), "100 μM" = 100 * 10^(-6), "10 μM" = 10 * 10^(-6)),
-                                                selected = 2 * 10^(-2)),
-                                    sliderInput("s_3", "S (M)",
-                                                min = 0, max = 10, value = 1, step = 0.01),
-                                    actionButton("add_s_3", "Do an experiment"),
-                                    sliderInput("time_3", "Time (s)",
-                                                min = 0, max = 1000, value = 20, step = 1),
-                                    checkboxInput("theory_3", "Display Theoretical Values", value = FALSE)
-                                  ),
-                                  mainPanel(
-                                    plotOutput("graph_Pt_3", height = "400px"),
-                                    plotOutput("graph_MM_3", height = "400px"))
                                   ),
                          
                          tabPanel("P-t and MM 2",

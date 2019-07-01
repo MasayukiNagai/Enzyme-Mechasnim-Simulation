@@ -12,7 +12,7 @@ source("calc_slopes.R")
 
 server = function(input, output, session) {
 
-    #page 1
+#page 1
     substrates = character()
     values = reactiveValues(df = data.frame("substrates" = substrates))
     newEntry = observeEvent(input$upgrade_button, {
@@ -61,79 +61,7 @@ server = function(input, output, session) {
                        display_theoretical_values = input$theory)
     })
     
-    #Page2 P-t graph 1
-    output$instruction_Pt = renderUI({
-        includeHTML("instruction_Pt.html")
-    })
-    
-    substrates_1 = character()
-    slopes_1 = character()
-    values_1 = reactiveValues(df = data.frame("substrates" = substrates_1, "slopes" = slopes_1))
-    newEntry = observeEvent(input$add_s_1, {
-        if(input$s_1 %in% values_1$df$substrates){
-            substrates_new = values_1$df$substrates
-        }
-        else{
-            substrates_new = c(values_1$df$substrates, input$s_1)
-        }
-        e = as.numeric(input$e_1)
-        time = input$time_1
-        slopes_new = unlist(lapply(substrates_new, calc_slopes, "e" = e, "time" = time))
-        if(e == 1 * 10^(-1) || e == 2 * 10^(-2)){
-            values_1$df = data.frame("substrates" = substrates_new, "slopes" = formatC(slopes_new, format = "f", digits = 3))
-        }
-        else{
-            values_1$df = data.frame("substrates" = substrates_new, "slopes" = formatC(slopes_new, format = "e", digits = 2))
-        }
-        
-    })
-    
-    observe({
-        concentration = as.numeric(input$e_1)
-        if(concentration == 1 * 10^(-1)){
-            fixed_time = 10
-        }
-        else if(concentration == 2 * 10^(-2)){
-            fixed_time = 20
-        }
-        else if(concentration == 1 * 10^(-4)){
-            fixed_time = 4000
-        }
-        else if(concentration == 1 * 10^(-5)){
-            fixed_time = 10000
-        }
-        else{
-            fixed_time = 100
-        }
-        updateSliderInput(session, "time_1", value = fixed_time)
-    })
-    
-    spectrum_1 = reactive({
-        out = lambertMM(file = values_1$df,
-                        "e" = as.numeric(input$e_1),
-                        # "km" = input$km_1,
-                        # "k2" = input$k2_1,
-                        "time" = input$time_1)
-    })
-    
-    output$graph_Pt_1 = renderPlot({
-        plot_lambert2(file = spectrum_1(),
-                     display_theoretical_values = input$theory_1)
-    })
-    
-    output$table_Pt_1 = renderTable({
-        if(length(values_1$df$substrates) < 10 && length(values_1$df$substrates) > 0){
-            values_1$df[1:length(values_1$df$substrates), c("substrates", "slopes")]
-        }
-        else if (length(values_1$df$substrates) > 10){
-            values_1$df[1:10,c("substrates", "slopes")]
-        }
-        else{
-            values_1$df
-        }
-    }, striped = TRUE, bordered = TRUE, align = "c", width = "200px" )
-    
-    #Page3 P-t graph 1
+#Page3 P-t graph 1
     output$instruction_Pt_2 = renderUI({
         includeHTML("instruction_Pt.html")
     })
@@ -202,49 +130,6 @@ server = function(input, output, session) {
         }
     }, striped = TRUE, bordered = TRUE, align = "c", width = 300 )
     
-    #Page 4 P-t and MM 1
-    substrates_3 = character()
-    values_3 = reactiveValues(df = data.frame("substrates" = substrates_3))
-    newEntry = observeEvent(input$add_s_3, {
-        substrates_new = c(values_3$df$substrates, input$s_3)
-        values_3$df = data.frame("substrates" = substrates_new)
-    })
-    
-    observe({
-        concentration = as.numeric(input$e_3)
-        if(concentration == 1 * 10^(-1)){
-            fixed_time = 10
-        }
-        else if(concentration == 2 * 10^(-2)){
-            fixed_time = 20
-        }
-        else if(concentration == 1 * 10^(-4)){
-            fixed_time = 4000
-        }
-        else if(concentration == 1 * 10^(-5)){
-            fixed_time = 10000
-        }
-        else{
-            fixed_time = 100
-        }
-        updateSliderInput(session, "time_3", value = fixed_time)
-    })
-    
-    spectrum_3 = reactive({
-        out = lambertMM(file = values_3$df,
-                         "e" = as.numeric(input$e_3),
-                         "time" = input$time_3,
-                         "sd" = 0)
-    })
-    
-    output$graph_Pt_3 = renderPlot({
-        plot_lambert2(file = spectrum_3(),
-                      display_theoretical_values = input$theory_3)
-    })
-    output$graph_MM_3 = renderPlot({
-        plot_lambertMM(file = spectrum_3(),
-                        display_theoretical_values = input$theory_3)
-    })
     
     #Page 4 P-t and MM 2
     substrates_4 = character()
