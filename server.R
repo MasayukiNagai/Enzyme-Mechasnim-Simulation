@@ -210,6 +210,26 @@ server = function(input, output, session) {
         values_3$df = data.frame("substrates" = substrates_new)
     })
     
+    observe({
+        concentration = as.numeric(input$e_3)
+        if(concentration == 1 * 10^(-1)){
+            fixed_time = 10
+        }
+        else if(concentration == 2 * 10^(-2)){
+            fixed_time = 20
+        }
+        else if(concentration == 1 * 10^(-4)){
+            fixed_time = 4000
+        }
+        else if(concentration == 1 * 10^(-5)){
+            fixed_time = 10000
+        }
+        else{
+            fixed_time = 100
+        }
+        updateSliderInput(session, "time_3", value = fixed_time)
+    })
+    
     spectrum_3 = reactive({
         out = lambertMM(file = values_3$df,
                          "e" = as.numeric(input$e_3),
@@ -221,9 +241,56 @@ server = function(input, output, session) {
         plot_lambert2(file = spectrum_3(),
                       display_theoretical_values = input$theory_3)
     })
-    
     output$graph_MM_3 = renderPlot({
         plot_lambertMM(file = spectrum_3(),
                         display_theoretical_values = input$theory_3)
+    })
+    
+    #Page 4 P-t and MM 2
+    substrates_4 = character()
+    values_4 = reactiveValues(df = data.frame("substrates" = substrates_4))
+    newEntry = observeEvent(input$add_s_4, {
+        substrates_new = c(values_4$df$substrates, input$s_4)
+        values_4$df = data.frame("substrates" = substrates_new)
+    })
+    
+    observe({
+        concentration = as.numeric(input$e_4)
+        if(concentration == 1 * 10^(-1)){
+            fixed_time = 10
+        }
+        else if(concentration == 2 * 10^(-2)){
+            fixed_time = 20
+        }
+        else if(concentration == 1 * 10^(-4)){
+            fixed_time = 4000
+        }
+        else if(concentration == 1 * 10^(-5)){
+            fixed_time = 10000
+        }
+        else{
+            fixed_time = 100
+        }
+        updateSliderInput(session, "time_3", value = fixed_time)
+    })
+    
+    spectrum_4 = reactive({
+        out = lambertMM(file = values_4$df,
+                        "e" = as.numeric(input$e_4),
+                        "time" = input$time_4,
+                        "sd" = 0)
+    })
+    
+    output$graph_Pt_4 = renderPlot({
+        plot_lambert2(file = spectrum_4(),
+                      display_theoretical_values = input$theory_4)
+    })
+    
+    output$graph_MM_4 = renderPlot({
+        plot_lambertMM(file = spectrum_4(),
+                       display_theoretical_values = input$theory_4,
+                       display_fit_values = input$fit_4,
+                       km_pre = input$km_4,
+                       vmax_pre = input$vmax_4)
     })
 }
