@@ -217,6 +217,7 @@ server = function(input, output, session) {
         }
     })
     
+    
 # Exercise 2
     output$enzyme2 = renderText({
         paste("100 μM")
@@ -267,10 +268,9 @@ server = function(input, output, session) {
             values2$df[1, c("substrates", "slopes")]
         }
     }, striped = TRUE, bordered = TRUE, align = "c", width = 300)
-    
+
+        
 #Exercise 3
-    
-    # Exercise 2
     output$enzyme3 = renderText({
         paste("100 μM")
     })
@@ -281,6 +281,7 @@ server = function(input, output, session) {
     
     newEntry3 = observeEvent(input$add_s3, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
+        #you can add "count >= 5" to the following condition but maybe too strict
         if(!(input$s3 %in% values2$df$substrates) && count < 10){
             file = lambertPt("s" = input$s3, "e" = e2, "time" = time2, "k2" = k2, "km" = km, "pinf_ratio" = pinf_ratio, "sd" = sd)
             values2$df$substrates[(count + 1)] = input$s3
@@ -301,6 +302,51 @@ server = function(input, output, session) {
     })
     
     output$table3 = renderTable({
+        if(length(which(values2$df$substrates >=0)) < 10 && length(which(values2$df$substrates >=0)) > 0){
+            values2$df[1: length(which(values2$df$substrates >=0)), c("substrates", "slopes")]
+        }
+        else if (length(which(values2$df$substrates >=0)) >= 10){
+            values2$df[1:10, c("substrates", "slopes")]
+        }
+        else{
+            values2$df[1, c("substrates", "slopes")]
+        }
+    }, striped = TRUE, bordered = TRUE, align = "c", width = 300)
+    
+    
+#Exercise 4
+    output$enzyme4 = renderText({
+        paste("100 μM")
+    })
+    
+    #should use kmapp but now just using km
+    vmax4 = k2 * e2
+    output$error4 = renderText({
+        count = length(values2$df$substrates[!is.na(values2$df$substrates)])
+        theo = vmax4 * as.numeric(values2$df$substrates[1:count])/(km + as.numeric(values2$df$substrates[1:count]))
+        exp = input$vmax4 * as.numeric(values2$df$substrates[1:count])/(input$km4 + as.numeric(values2$df$substrates[1:count]))
+        error = round(sum(sqrt((theo - exp)^2))/e2, 2)
+        paste("Error:", error)
+    })
+    
+    output$instruction_4 = renderUI({
+        includeHTML("instruction_Pt.html")
+    })
+    
+    output$graph_MM4 = renderPlot({
+        plot_MM(file = values2$df,
+                #time is determined from exercise 1
+                "time" = 4000,
+                "s_max" = s_max,
+                "pinf_ratio" = pinf_ratio,
+                "kmapp" = km,
+                "km_pre" = input$km4,
+                "vmax_pre" = input$vmax4,
+                display_theoretical_values = input$theory4,
+                display_fit_values = TRUE)
+    })
+    
+    output$table4 = renderTable({
         if(length(which(values2$df$substrates >=0)) < 10 && length(which(values2$df$substrates >=0)) > 0){
             values2$df[1: length(which(values2$df$substrates >=0)), c("substrates", "slopes")]
         }

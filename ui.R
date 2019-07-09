@@ -141,6 +141,32 @@ ui<-fluidPage(
                                     column(8, 
                                            htmlOutput("instruction_3"))
                                   )
+                         ),
+                         
+                         tabPanel("Exercise 4",
+                                  fluidRow(
+                                    column(3,
+                                           wellPanel(
+                                             h5("Enzyme concentration from exercise 1"),
+                                             verbatimTextOutput("enzyme4"),
+                                             sliderInput("km4", "Km[M]",
+                                                         min = 0, max = 10, value = 2, step = 0.01),
+                                             sliderInput("vmax4", "Vmax [M/s]",
+                                                         min = 0, max = 0.01 , value = 0.01, step = 0.0001),
+                                             verbatimTextOutput("error4"),
+                                             checkboxInput("theory4", "Display Theoretical Values")
+                                           )),
+                                    column(8,
+                                           plotOutput("graph_MM4", height = "400px")
+                                    )
+                                  ),
+                                  fluidRow(
+                                    column(3, align = "center",
+                                           wellPanel(tableOutput("table4"))
+                                    ),
+                                    column(8, 
+                                           htmlOutput("instruction_4"))
+                                  )
                          )
               
    )
