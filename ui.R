@@ -47,7 +47,7 @@ ui<-fluidPage(
                                            wellPanel(
                                              selectInput("e_2", "[E] (M)",
                                                          choices = list("0.1 M" = 1 * 10^(-1), "0.02 M" = 2 * 10^(-2), "100 μM" = 100 * 10^(-6), "10 μM" = 10 * 10^(-6)),
-                                                         selected = 2 * 10^(-2)),
+                                                         selected = 100 * 10^(-6)),
                                              sliderInput("s_2", "[S] (M)",
                                                          min = 0, max = 10, value = 1, step = 0.01),
                                              actionButton("add_s_2", "Do an experiment"),

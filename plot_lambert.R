@@ -1,29 +1,25 @@
 source("change_color.R")
-plot_lambert = function(file, display_theoretical_values = FALSE){
+plot_lambert = function(file,
+                        display_theoretical_values = FALSE){
   
-  if(length(file$pt) == 0){
-    s_max = 1
-  }
-  else{
-    s_max = 1.2 * max(file$substrates)
-  }
-
+  s_max = file$s_max
+  
   pinf = file$pinf_ratio * s_max
   pt_max = pinf - file$kmapp * lambertW({(pinf/file$kmapp) * exp((pinf - file$vapp * file$time)/file$kmapp)})
   ymax = 1.1 * pt_max
   if(length(file$pt) == 0){
     plot(x = -100, y = -100, type = "p",
-         xlim = c(0, file$time), ylim = c(0, ymax), xlab = "Time (s)", ylab = "[P] (M)")
-    # mtext("Time (s)", side = 1, line = 2, cex = 1.5)
-    # mtext("[P] (M)", side = 2, line = 2, cex = 1.5)
+         xlim = c(0, file$time), ylim = c(0, ymax), xlab = "", ylab = "")
+    mtext("Time (s)", side = 1, line = 2, cex = 1.5)
+    mtext("[P] (M)", side = 2, line = 2, cex = 1.5)
     # mtext(main_title, side = 3, line = 1.5, cex = 2.5)
     grid(col = "black")
   }
   else{
     plot(x = -100, y = -100, type = "p",
-         xlim = c(0, file$time), ylim = c(0, ymax), xlab = "Time (s)", ylab = "[P] (M)")
-    # mtext("Time (s)", side = 1, line = 2, cex = 1.5)
-    # mtext("[P] (M)", side = 2, line = 2, cex = 1.5)
+         xlim = c(0, file$time), ylim = c(0, ymax), xlab = "", ylab = "")
+    mtext("Time (s)", side = 1, line = 2, cex = 1.5)
+    mtext("[P] (M)", side = 2, line = 2, cex = 1.5)
     # mtext(main_title, side = 3, line = 1.5, cex = 2.5)
     grid(col = "black")
     if(display_theoretical_values){

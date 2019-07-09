@@ -1,4 +1,4 @@
-lambertMM = function(file, e = 0.02, i = 0.30,
+lambertMM = function(file, e = 0.02, s_max = 10, i = 0.30,
                      k1 = 1000, k_1 = 950, k2 = 50, km = NULL, ki1 = 0.20, ki2 = 0.15,
                      pinf_ratio = 0.9818, time = 20, sd = 0, km_pre = 1, vmax_pre = 0.5, 
                      game = c("Normal", "Competitive", "Uncompetitive", "Mixed")){
@@ -70,6 +70,7 @@ lambertMM = function(file, e = 0.02, i = 0.30,
              "ki2" = ki2,
              "substrates" = file$substrates,
              "e" = e,
+             "s_max" = s_max,
              "i" = i,
              "slopes" = slopes,
              "intercepts" = intercepts,
