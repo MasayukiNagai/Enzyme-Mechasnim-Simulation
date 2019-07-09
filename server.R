@@ -125,13 +125,6 @@ server = function(input, output, session) {
         updateSliderInput(session, "time_2", value = fixed_time)
     })
 
-    # spectrum_2 = reactive({
-    #     out = lambertMM(file = values_2$df,
-    #                     "e" = as.numeric(input$e_2),
-    #                     "s_max" = 10,
-    #                     "time" = input$time_2)
-    # })
-
     output$graph_Pt_2 = renderPlot({
         plot_Pt(file = values$df,
                 "time" = input$time_2,
@@ -223,4 +216,99 @@ server = function(input, output, session) {
             paste("Km:", " ", ",",  "Vmax:", " ")
         }
     })
+    
+# Exercise 2
+    output$enzyme2 = renderText({
+        paste("100 μM")
+    })
+    
+    output$instruction_2 = renderUI({
+        includeHTML("instruction_Pt.html")
+    })
+    
+    substrates2 = rep(NA, 20)
+    pt2 = matrix(nrow = 20, ncol = time_max + 1)
+    pt_error2 = matrix(nrow = 20, ncol = time_max + 1)
+    slopes2 = rep(NA, 20)
+    intercepts2 = rep(NA, 20)
+    #e2 and time are determined by excercise 1
+    e2 = 100 * 10^(-6)
+    time2 = 4000
+    values2 = reactiveValues(df = data.frame("substrates" = substrates2, "slopes" = slopes2, "intercepts" = intercepts2, "pt_error" = pt_error2, "pt" = pt2))
+    newEntry2 = observeEvent(input$add_s2, {
+        count = length(values2$df$substrates[!is.na(values2$df$substrates)])
+        if(!(input$s2 %in% values2$df$substrates) && count < 5){
+            file = lambertPt("s" = input$s2, "e" = e2, "time" = time2, "k2" = k2, "km" = km, "pinf_ratio" = pinf_ratio, "sd" = sd)
+            values2$df$substrates[(count + 1)] = input$s2
+            values2$df[(count + 1), (5 + time_max) : (5 + time_max + time2)]= file$pt
+            values2$df[(count + 1), 4 : (4 + time2)] = file$pt_error
+            values2$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
+            values2$df$intercepts[(count + 1)] = file$intercepts_error
+        } 
+    })
+
+    output$graph_Pt2 = renderPlot({
+        plot_Pt(file = values2$df,
+                #time is determined from exercise 1
+                "time" = 4000,
+                "s_max" = s_max,
+                "pinf_ratio" = pinf_ratio,
+                "kmapp" = km)
+    })
+    
+    output$table2 = renderTable({
+        if(length(which(values2$df$substrates >=0)) < 5 && length(which(values2$df$substrates >=0)) > 0){
+            values2$df[1: length(which(values2$df$substrates >=0)), c("substrates", "slopes")]
+        }
+        else if (length(which(values2$df$substrates >=0)) >= 5){
+            values2$df[1:5, c("substrates", "slopes")]
+        }
+        else{
+            values2$df[1, c("substrates", "slopes")]
+        }
+    }, striped = TRUE, bordered = TRUE, align = "c", width = 300)
+    
+#Exercise 3
+    
+    # Exercise 2
+    output$enzyme3 = renderText({
+        paste("100 μM")
+    })
+    
+    output$instruction_3 = renderUI({
+        includeHTML("instruction_Pt.html")
+    })
+    
+    newEntry3 = observeEvent(input$add_s3, {
+        count = length(values2$df$substrates[!is.na(values2$df$substrates)])
+        if(!(input$s3 %in% values2$df$substrates) && count < 10){
+            file = lambertPt("s" = input$s3, "e" = e2, "time" = time2, "k2" = k2, "km" = km, "pinf_ratio" = pinf_ratio, "sd" = sd)
+            values2$df$substrates[(count + 1)] = input$s3
+            values2$df[(count + 1), (5 + time_max) : (5 + time_max + time2)]= file$pt
+            values2$df[(count + 1), 4 : (4 + time2)] = file$pt_error
+            values2$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
+            values2$df$intercepts[(count + 1)] = file$intercepts_error
+        } 
+    })
+    
+    output$graph_MM3 = renderPlot({
+        plot_MM(file = values2$df,
+                #time is determined from exercise 1
+                "time" = 4000,
+                "s_max" = s_max,
+                "pinf_ratio" = pinf_ratio,
+                "kmapp" = km)
+    })
+    
+    output$table3 = renderTable({
+        if(length(which(values2$df$substrates >=0)) < 10 && length(which(values2$df$substrates >=0)) > 0){
+            values2$df[1: length(which(values2$df$substrates >=0)), c("substrates", "slopes")]
+        }
+        else if (length(which(values2$df$substrates >=0)) >= 10){
+            values2$df[1:10, c("substrates", "slopes")]
+        }
+        else{
+            values2$df[1, c("substrates", "slopes")]
+        }
+    }, striped = TRUE, bordered = TRUE, align = "c", width = 300)
 }

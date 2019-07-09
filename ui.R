@@ -95,6 +95,52 @@ ui<-fluidPage(
                                   mainPanel(
                                     plotOutput("graph_Pt_4", height = "400px"),
                                     plotOutput("graph_MM_4", height = "400px"))
+                         ),
+                         
+                         tabPanel("Exercise 2",
+                                  fluidRow(
+                                    column(3,
+                                           wellPanel(
+                                             h5("Enzyme concentration from exercise 1"),
+                                             verbatimTextOutput("enzyme2"),
+                                             sliderInput("s2", "Substrate Concentration (M)",
+                                                         min = 0, max = 10, value = 1, step = 0.01),
+                                             actionButton("add_s2", "Do an experiment")
+                                           )),
+                                    column(8,
+                                           plotOutput("graph_Pt2", height = "400px")
+                                    )
+                                  ),
+                                  fluidRow(
+                                    column(3, align = "center",
+                                           wellPanel(tableOutput("table2"))
+                                           ),
+                                    column(8, 
+                                           htmlOutput("instruction_2"))
+                                  )
+                          ),
+                         
+                         tabPanel("Exercise 3",
+                                  fluidRow(
+                                    column(3,
+                                           wellPanel(
+                                             h5("Enzyme concentration from exercise 1"),
+                                             verbatimTextOutput("enzyme3"),
+                                             sliderInput("s3", "Substrate Concentration (M)",
+                                                         min = 0, max = 10, value = 1, step = 0.01),
+                                             actionButton("add_s3", "Do an experiment")
+                                           )),
+                                    column(8,
+                                           plotOutput("graph_MM3", height = "400px")
+                                    )
+                                  ),
+                                  fluidRow(
+                                    column(3, align = "center",
+                                           wellPanel(tableOutput("table3"))
+                                    ),
+                                    column(8, 
+                                           htmlOutput("instruction_3"))
+                                  )
                          )
               
    )

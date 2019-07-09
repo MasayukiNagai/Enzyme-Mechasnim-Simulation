@@ -9,7 +9,7 @@ plot_Pt = function(file,
   pt_max = pinf - kmapp * lambertW({(pinf/kmapp) * exp((pinf - vapp * time)/kmapp)})
   ymax = 1.1 * s_max
   #checking if the first trial is done or not by seeing the first cell of pt
-  if(is.na(file[1,4])){
+  if(count == 0){
     plot(x = -100, y = -100, type = "p",
          xlim = c(0, time), ylim = c(0, ymax), xlab = "", ylab = "")
     mtext("Time (s)", side = 1, line = 2, cex = 1.5)
