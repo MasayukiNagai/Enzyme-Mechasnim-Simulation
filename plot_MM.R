@@ -9,16 +9,16 @@ plot_MM = function(file, time = 1000,
   if(count == 0){
     plot(x = -100, y = -100, type = "p", lwd = 1, lty = 1,
          xlim = c(0, s_max), ylim = c(0, ymax), xlab = "", ylab = "")
-    mtext("Substrate Concentration, [S] (M)", side = 1, line = 2, cex = 1.5)
-    mtext("Initial Rate, V0 (M/s)", side = 2, line = 2, cex = 1.5)
+    mtext("substrate concentration, [S] (M)", side = 1, line = 3, cex = 1.5)
+    mtext("initial Rate, V0 (M/s)", side = 2, line = 3, cex = 1.5)
     # mtext(main_title, side = 3, line = 1.5, cex = 2.5)
     grid(col = "black")
   }
   else{
     plot(x = -100, y = -100, type = "p", lwd = 1, lty = 1,
          xlim = c(0, s_max), ylim = c(0, ymax), xlab = "", ylab = "")
-    mtext("Substrate Concentration, [S] (M)", side = 1, line = 2, cex = 1.5)
-    mtext("Initial Rate, V0 (M/s)", side = 2, line = 2, cex = 1.5)
+    mtext("substrate csoncentration, [S] (M)", side = 1, line = 2, cex = 1.5)
+    mtext("initial Rate, V0 (M/s)", side = 2, line = 2, cex = 1.5)
     # mtext(main_title, side = 3, line = 1.5, cex = 2.5)
     grid(col = "black")
     color = unlist(lapply(as.numeric(file$slopes[1:count])/vapp, change_color))

@@ -1,10 +1,10 @@
 lambertPt = function(s = 1, e = 100 * 10^(-6), i = 0.30,
                      k1 = 1000, k_1 = 950, k2 = 50, km = NULL, ki1 = 0.20, ki2 = 0.15,
-                     pinf_ratio = 0.9818, time = 20, interval = 50, sd = 0,
+                     s_max = 10, pinf_ratio = 0.9818, time_max = 10000, sd = 0,
                      game = c("Normal", "Competitive", "Uncompetitive", "Mixed")){
   
   game = match.arg(game)
-  t = seq(0, time)
+  t = seq(0, time_max)
   if(is.null(km)){
     km = (k_1 + k2)/ k1
   }
@@ -37,13 +37,9 @@ lambertPt = function(s = 1, e = 100 * 10^(-6), i = 0.30,
   slopes_error = as.numeric(v_init_error$coefficient[2])
   intercepts_error = as.numeric(v_init_error$coefficient[1])
 
-  
-  # error = NA
-  # if(length(file$substrates) != 0){
-  #   theo = vapp * file$substrates/(kmapp + file$substrates)
-  #   exp = vmax_pre * file$substrates/(km_pre + file$substrates)
-  #   error = sum(sqrt((theo - exp)^2))/e
-  # }
+  pinf_max = pinf_ratio * s_max
+  pt_max = pinf_max - kmapp * lambertW({(pinf_max/kmapp) * exp((pinf_max - vapp * t)/kmapp)})
+  time = min(min(which(pt_max > (0.97 * pinf_max))) * 1.5, time_max)
   
   out = list("pt" = pt,
              "pt_error" = pt_error,
@@ -57,6 +53,7 @@ lambertPt = function(s = 1, e = 100 * 10^(-6), i = 0.30,
              "k2"  = k2,
              "ki1" = ki1,
              "ki2" = ki2,
+             "s_max" = s_max,
              "s" = s,
              "e" = e,
              "i" = i,

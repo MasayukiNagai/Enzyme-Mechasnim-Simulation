@@ -97,6 +97,35 @@ ui<-fluidPage(
                                     plotOutput("graph_MM_4", height = "400px"))
                          ),
                          
+                         tabPanel("Exercise 1",
+                                  fluidRow(
+                                    column(3,
+                                           wellPanel(
+                                             selectInput("e_1", "Enzyme concentration (M)",
+                                                         choices = list("1.0 M" = 1, "0.1 M" = 0.1, "100 μM" = 100 * 10^(-6), "10 μM" = 10 * 10^(-6)),
+                                                         selected = NULL),
+                                             selectInput("s1", "Substrate concentration (M)",
+                                                         choices = list("0.5 M" = 0.5, "1.0 M" = 1, "3.0 M" = 3, "7.0 M" = 7, "10.0 M" = 10),
+                                                         selected = NULL),
+                                             actionButton("ex1", "Do an experiment")
+                                           )),
+                                    column(9,
+                                           plotOutput("graph_Pt1", height = "500px")
+                                    )
+                                  ),
+                                  fluidRow(
+                                    column(3,
+                                           wellPanel(
+                                             selectInput("e1", "Determine enzyme concentration (M)",
+                                                         choices = list("1.0 M" = 1, "0.1 M" = 0.1, "100 μM" = 100 * 10^(-6), "10 μM" = 10 * 10^(-6)),
+                                                         selected = NULL)
+                                           )
+                                    ),
+                                    column(9,
+                                           wellPanel(htmlOutput("instruction_1")))
+                                  )
+                         ),
+                         
                          tabPanel("Exercise 2",
                                   fluidRow(
                                     column(3,
@@ -107,16 +136,16 @@ ui<-fluidPage(
                                                          min = 0, max = 10, value = 1, step = 0.01),
                                              actionButton("add_s2", "Do an experiment")
                                            )),
-                                    column(8,
-                                           plotOutput("graph_Pt2", height = "400px")
+                                    column(9,
+                                           plotOutput("graph_Pt2", height = "500px")
                                     )
                                   ),
                                   fluidRow(
                                     column(3, align = "center",
                                            wellPanel(tableOutput("table2"))
                                            ),
-                                    column(8, 
-                                           htmlOutput("instruction_2"))
+                                    column(9, 
+                                           wellPanel(htmlOutput("instruction_2")))
                                   )
                           ),
                          
@@ -130,16 +159,16 @@ ui<-fluidPage(
                                                          min = 0, max = 10, value = 1, step = 0.01),
                                              actionButton("add_s3", "Do an experiment")
                                            )),
-                                    column(8,
-                                           plotOutput("graph_MM3", height = "400px")
+                                    column(9,
+                                           plotOutput("graph_MM3", height = "500px")
                                     )
                                   ),
                                   fluidRow(
                                     column(3, align = "center",
                                            wellPanel(tableOutput("table3"))
                                     ),
-                                    column(8, 
-                                           htmlOutput("instruction_3"))
+                                    column(9, 
+                                           wellPanel(htmlOutput("instruction_3")))
                                   )
                          ),
                          
@@ -156,16 +185,16 @@ ui<-fluidPage(
                                              verbatimTextOutput("error4"),
                                              checkboxInput("theory4", "Display Theoretical Values")
                                            )),
-                                    column(8,
-                                           plotOutput("graph_MM4", height = "400px")
+                                    column(9,
+                                           plotOutput("graph_MM4", height = "500px")
                                     )
                                   ),
                                   fluidRow(
                                     column(3, align = "center",
                                            wellPanel(tableOutput("table4"))
                                     ),
-                                    column(8, 
-                                           htmlOutput("instruction_4"))
+                                    column(9, 
+                                           wellPanel(htmlOutput("instruction_4")))
                                   )
                          )
               

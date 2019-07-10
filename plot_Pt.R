@@ -12,16 +12,16 @@ plot_Pt = function(file,
   if(count == 0){
     plot(x = -100, y = -100, type = "p",
          xlim = c(0, time), ylim = c(0, ymax), xlab = "", ylab = "")
-    mtext("Time (s)", side = 1, line = 2, cex = 1.5)
-    mtext("[P] (M)", side = 2, line = 2, cex = 1.5)
+    mtext("time (s)", side = 1, line = 3, cex = 1.5)
+    mtext("product concentration, [P] (M)", side = 2, line = 3, cex = 1.5)
     # mtext(main_title, side = 3, line = 1.5, cex = 2.5)
     grid(col = "black")
   }
   else{
     plot(x = -100, y = -100, type = "p",
          xlim = c(0, time), ylim = c(0, ymax), xlab = "", ylab = "")
-    mtext("Time (s)", side = 1, line = 2, cex = 1.5)
-    mtext("[P] (M)", side = 2, line = 2, cex = 1.5)
+    mtext("time (s)", side = 1, line = 2, cex = 1.5)
+    mtext("product concentration, [P] (M)", side = 2, line = 2, cex = 1.5)
     # mtext(main_title, side = 3, line = 1.5, cex = 2.5)
     grid(col = "black")
     if(display_theoretical_values){

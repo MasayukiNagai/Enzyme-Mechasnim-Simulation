@@ -9,14 +9,13 @@ source("plot_lambert.R")
 source("plot_lambertMM.R")
 source("plot_Pt.R")
 source("plot_MM.R")
-source("calc_slopes.R")
-source("calc_pt.R")
 source("lambertPt.R")
+source("simple_plot_Pt.R")
 
 km = 1
 k2 = 50
 pinf_ratio = 0.9818
-sd = 0.03
+sd = 0.02
 s_max = 10
 time_max = 10000
 
@@ -217,14 +216,36 @@ server = function(input, output, session) {
         }
     })
     
+# Exercise 1
+
+    output$instruction_1 = renderUI({
+        includeHTML("Captions/instruction_ex1.html")
+    })
+
+    calcPt = reactive({
+        out = lambertPt(s = as.numeric(input$s1),
+                        e = as.numeric(input$e_1),
+                        k2 = k2,
+                        km = km,
+                        s_max = s_max,
+                        pinf_ratio = pinf_ratio,
+                        time_max = time_max,
+                        sd = sd)
+        out
+    })
+
+    output$graph_Pt1 = renderPlot({
+        simple_plot_Pt(file = calcPt())
+    })
+
     
 # Exercise 2
     output$enzyme2 = renderText({
-        paste("100 μM")
+        paste(input$e1, " M")
     })
     
     output$instruction_2 = renderUI({
-        includeHTML("instruction_Pt.html")
+        includeHTML("Captions/instruction_ex2.html")
     })
     
     substrates2 = rep(NA, 20)
@@ -233,13 +254,12 @@ server = function(input, output, session) {
     slopes2 = rep(NA, 20)
     intercepts2 = rep(NA, 20)
     #e2 and time are determined by excercise 1
-    e2 = 100 * 10^(-6)
     time2 = 4000
     values2 = reactiveValues(df = data.frame("substrates" = substrates2, "slopes" = slopes2, "intercepts" = intercepts2, "pt_error" = pt_error2, "pt" = pt2))
     newEntry2 = observeEvent(input$add_s2, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         if(!(input$s2 %in% values2$df$substrates) && count < 5){
-            file = lambertPt("s" = input$s2, "e" = e2, "time" = time2, "k2" = k2, "km" = km, "pinf_ratio" = pinf_ratio, "sd" = sd)
+            file = lambertPt("s" = input$s2, "e" = as.numeric(input$e1), "time" = time2, "k2" = k2, "km" = km, "pinf_ratio" = pinf_ratio, "sd" = sd)
             values2$df$substrates[(count + 1)] = input$s2
             values2$df[(count + 1), (5 + time_max) : (5 + time_max + time2)]= file$pt
             values2$df[(count + 1), 4 : (4 + time2)] = file$pt_error
@@ -251,10 +271,10 @@ server = function(input, output, session) {
     output$graph_Pt2 = renderPlot({
         plot_Pt(file = values2$df,
                 #time is determined from exercise 1
-                "time" = 4000,
-                "s_max" = s_max,
-                "pinf_ratio" = pinf_ratio,
-                "kmapp" = km)
+                time = 4000,
+                s_max = s_max,
+                pinf_ratio = pinf_ratio,
+                kmap = km)
     })
     
     output$table2 = renderTable({
@@ -272,18 +292,18 @@ server = function(input, output, session) {
         
 #Exercise 3
     output$enzyme3 = renderText({
-        paste("100 μM")
+        paste(input$e1, " M")
     })
     
     output$instruction_3 = renderUI({
-        includeHTML("instruction_Pt.html")
+        includeHTML("Captions/instruction_ex3.html")
     })
     
     newEntry3 = observeEvent(input$add_s3, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         #you can add "count >= 5" to the following condition but maybe too strict
         if(!(input$s3 %in% values2$df$substrates) && count < 10){
-            file = lambertPt("s" = input$s3, "e" = e2, "time" = time2, "k2" = k2, "km" = km, "pinf_ratio" = pinf_ratio, "sd" = sd)
+            file = lambertPt("s" = input$s3, "e" = as.numeric(input$e1), "time" = time2, "k2" = k2, "km" = km, "pinf_ratio" = pinf_ratio, "sd" = sd)
             values2$df$substrates[(count + 1)] = input$s3
             values2$df[(count + 1), (5 + time_max) : (5 + time_max + time2)]= file$pt
             values2$df[(count + 1), 4 : (4 + time2)] = file$pt_error
@@ -295,10 +315,10 @@ server = function(input, output, session) {
     output$graph_MM3 = renderPlot({
         plot_MM(file = values2$df,
                 #time is determined from exercise 1
-                "time" = 4000,
-                "s_max" = s_max,
-                "pinf_ratio" = pinf_ratio,
-                "kmapp" = km)
+                time = 4000,
+                s_max = s_max,
+                pinf_ratio = pinf_ratio,
+                kmapp = km)
     })
     
     output$table3 = renderTable({
@@ -316,32 +336,32 @@ server = function(input, output, session) {
     
 #Exercise 4
     output$enzyme4 = renderText({
-        paste("100 μM")
+        paste(input$e1, " M")
     })
     
     #should use kmapp but now just using km
-    vmax4 = k2 * e2
     output$error4 = renderText({
+        vmax4 = k2 * as.numeric(input$e1)
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         theo = vmax4 * as.numeric(values2$df$substrates[1:count])/(km + as.numeric(values2$df$substrates[1:count]))
         exp = input$vmax4 * as.numeric(values2$df$substrates[1:count])/(input$km4 + as.numeric(values2$df$substrates[1:count]))
-        error = round(sum(sqrt((theo - exp)^2))/e2, 2)
+        error = round(sum(sqrt((theo - exp)^2))/as.numeric(input$e1), 2)
         paste("Error:", error)
     })
     
     output$instruction_4 = renderUI({
-        includeHTML("instruction_Pt.html")
+        includeHTML("Captions/instruction_ex4.html")
     })
     
     output$graph_MM4 = renderPlot({
         plot_MM(file = values2$df,
                 #time is determined from exercise 1
-                "time" = 4000,
-                "s_max" = s_max,
-                "pinf_ratio" = pinf_ratio,
-                "kmapp" = km,
-                "km_pre" = input$km4,
-                "vmax_pre" = input$vmax4,
+                time = 4000,
+                s_max = s_max,
+                pinf_ratio = pinf_ratio,
+                kmapp = km,
+                km_pre = input$km4,
+                vmax_pre = input$vmax4,
                 display_theoretical_values = input$theory4,
                 display_fit_values = TRUE)
     })
