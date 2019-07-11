@@ -39,7 +39,7 @@ lambertPt = function(s = 1, e = 100 * 10^(-6), i = 0.30,
 
   pinf_max = pinf_ratio * s_max
   pt_max = pinf_max - kmapp * lambertW({(pinf_max/kmapp) * exp((pinf_max - vapp * t)/kmapp)})
-  time = min(min(which(pt_max > (0.97 * pinf_max))) * 1.5, time_max)
+  time = min(min(which(pt_max > (0.97 * pinf_max)), time_max) * 1.5, time_max)
   
   out = list("pt" = pt,
              "pt_error" = pt_error,

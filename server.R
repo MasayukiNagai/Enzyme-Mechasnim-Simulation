@@ -3,10 +3,6 @@ library(VGAM)
 library(stats4)
 library(splines)
 
-source("lambertMM.R")
-source("lambertMMsd.R")
-source("plot_lambert.R")
-source("plot_lambertMM.R")
 source("plot_Pt.R")
 source("plot_MM.R")
 source("lambertPt.R")
@@ -15,97 +11,38 @@ source("simple_plot_Pt.R")
 km = 1
 k2 = 50
 pinf_ratio = 0.9818
-sd = 0.02
+sd = 0.03
 s_max = 10
 time_max = 10000
 
 server = function(input, output, session) {
 
-#page 1
-    substrates_1 = character()
-    values_1 = reactiveValues(df = data.frame("substrates" = substrates_1))
-    newEntry = observeEvent(input$upgrade_button, {
-        substrates_new = c(values_1$df$substrates, input$s)
-        values_1$df = data.frame("substrates" = substrates_new)
-    })
-
-    spectrum = reactive({
-        out = lambertMM(file = values_1$df,
-                        "e" = input$e * 10^(-6),
-                        "i" = input$i,
-                        "k1" = input$k1,
-                        "k_1" = input$k_1,
-                        "k2" = input$k2,
-                        "ki1" = input$ki1,
-                        "ki2" = input$ki2,
-                        "time" = input$time,
-                        "sd" = input$sd,
-                        "game" = input$games)
-        out
+#About
+    output$about = renderUI({
+        includeHTML("Captions/about.html")
     })
     
-    observeEvent(input$ds1,{
-        updateSliderInput(session, "e", value = 20000)
-        updateSliderInput(session, "k1", value = 1000)
-        updateSliderInput(session, "k_1", value = 950)
-        updateSliderInput(session, "k2", value = 50)
-    })
-    
-    observeEvent(input$ds2,{
-        updateSliderInput(session, "e", value = 10)
-        updateSliderInput(session, "k1", value = 3500)
-        updateSliderInput(session, "k_1", value = 150)
-        updateSliderInput(session, "k2", value = 2)
-        updateSliderInput(session, "time", value = 1000)
-    })
-    
-    
-    output$graph_P = renderPlot({
-        plot_lambert(file = spectrum(),
-                     display_theoretical_values = input$theory)
-    })
-    
-    output$graph_MM = renderPlot({
-        plot_lambertMM(file = spectrum(),
-                       display_theoretical_values = input$theory)
-    })
-    
-#Page2 P-t graph 2
-
-    output$instruction_Pt_2 = renderUI({
-        includeHTML("instruction_Pt.html")
-    })
-    
-    substrates = rep(NA, 40)
-    pt = matrix(nrow = 40, ncol = time_max + 1)
-    pt_error = matrix(nrow = 40, ncol = time_max + 1)
-    slopes = rep(NA, 40)
-    intercepts = rep(NA, 40)
-    count = 0
-    values = reactiveValues(df = data.frame("substrates" = substrates, "slopes" = slopes, "intercepts" = intercepts, "pt_error" = pt_error, "pt" = pt))
-    newEntry = observeEvent(input$add_s_2, {
-        if(!(input$s_2 %in% values$df$substrates)){
-            count = length(values$df$substrates[!is.na(values$df$substrates)]) + 1
-            e_2 = as.numeric(input$e_2)
-            time = input$time_2
-            file = lambertPt("s" = input$s_2, "e" = e_2, "time" = time, "k2" = k2, "km" = km, "pinf_ratio" = pinf_ratio, "sd" = sd)
-            values$df$substrates[count] = input$s_2
-            values$df[count, (5 + time_max) : (5 + time_max + time)]= file$pt
-            values$df[count, 4 : (4 + time)] = file$pt_error
-            if(e_2 == 1 * 10^(-1) || e_2 == 2 * 10^(-2)){
-                values$df$slopes[count] = formatC(file$slopes_error, format = "f", digits = 3)
-            }
-            else{
-                values$df$slopes[count] = formatC(file$slopes_error, format = "e", digits = 3)
-            }
-            values$df$intercepts[count] = file$intercepts_error
+#Overview
+    substrates0 = rep(NA, 20)
+    pt0 = matrix(nrow = 20, ncol = time_max + 1)
+    pt_error0 = matrix(nrow = 20, ncol = time_max + 1)
+    slopes0 = rep(NA, 20)
+    intercepts0 = rep(NA, 20)
+    values0 = reactiveValues(df = data.frame("substrates" = substrates0, "slopes" = slopes0, "intercepts" = intercepts0, "pt_error" = pt_error0, "pt" = pt0))
+    newEntry0 = observeEvent(input$add_s0, {
+        count = length(values0$df$substrates[!is.na(values0$df$substrates)])
+        if(!(input$s0 %in% values0$df$substrates) && count < 10){
+            file = lambertPt(s = input$s0, e = as.numeric(input$e0), k2 = k2, km = km, s_max = s_max, time_max = time_max, pinf_ratio = pinf_ratio, sd = sd)
+            values0$df$substrates[(count + 1)] = input$s0
+            values0$df[(count + 1), (5 + time_max) : (5 + time_max + time_max)]= file$pt
+            values0$df[(count + 1), 4 : (4 + time_max)] = file$pt_error
+            values0$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
+            values0$df$intercepts[(count + 1)] = file$intercepts_error
         } 
     })
     
-
-
     observe({
-        concentration = as.numeric(input$e_2)
+        concentration = as.numeric(input$e0)
         if(concentration == 1 * 10^(-1)){
             fixed_time = 10
         }
@@ -121,95 +58,46 @@ server = function(input, output, session) {
         else{
             fixed_time = 100
         }
-        updateSliderInput(session, "time_2", value = fixed_time)
-    })
-
-    output$graph_Pt_2 = renderPlot({
-        plot_Pt(file = values$df,
-                "time" = input$time_2,
-                "s_max" = s_max,
-                "pinf_ratio" = pinf_ratio,
-                "kmapp" = km,
-                display_theoretical_values = input$theory_2)
-    })
-
-    
-    output$table_Pt_2 = renderTable({
-        if(length(which(values$df$substrates >=0)) < 10 && length(which(values$df$substrates >=0)) > 0){
-            values$df[1: length(which(values$df$substrates >=0)), c("substrates", "slopes")]
-        }
-        else if (length(which(values$df$substrates >=0)) >= 10){
-            values$df[1:10, c("substrates", "slopes")]
-        }
-        else{
-            values$df[1, c("substrates", "slopes")]
-        }
-    }, striped = TRUE, bordered = TRUE, align = "c", width = 300)
-    
-    
-#Page 3 P-t and MM 2
-    substrates_4 = character()
-    values_4 = reactiveValues(df = data.frame("substrates" = substrates_4))
-    newEntry = observeEvent(input$add_s_4, {
-        substrates_new = c(values_4$df$substrates, input$s_4)
-        values_4$df = data.frame("substrates" = substrates_new)
+        updateSliderInput(session, "time0", value = fixed_time)
     })
     
-    observe({
-        concentration = as.numeric(input$e_4)
-        if(concentration == 1 * 10^(-1)){
-            fixed_time = 10
-        }
-        else if(concentration == 2 * 10^(-2)){
-            fixed_time = 20
-        }
-        else if(concentration == 1 * 10^(-4)){
-            fixed_time = 4000
-        }
-        else if(concentration == 1 * 10^(-5)){
-            fixed_time = 10000
-        }
-        else{
-            fixed_time = 100
-        }
-        updateSliderInput(session, "time_3", value = fixed_time)
+    output$graph_Pt0 = renderPlot({
+        plot_Pt(file = values0$df,
+                time = input$time0,
+                s_max = s_max,
+                time_max = time_max,
+                pinf_ratio = pinf_ratio,
+                kmap = km,
+                display_theoretical_values = input$theory0)
     })
     
-    
-    spectrum_4 = reactive({
-        out = lambertMM(file = values_4$df,
-                        "e" = as.numeric(input$e_4),
-                        "s_max" = 10,
-                        "time" = input$time_4,
-                        "km" = 1,
-                        "sd" = 0.03,
-                        "km_pre" = input$km_4,
-                        "vmax_pre" = input$vmax_4)
+    output$graph_MM0 = renderPlot({
+        plot_MM(file = values0$df,
+                time = input$time0,
+                s_max = s_max,
+                pinf_ratio = pinf_ratio,
+                kmapp = km,
+                km_pre = input$km0,
+                vmax_pre = input$vmax0,
+                display_theoretical_values = input$theory0,
+                display_fit_values = input$fit0)
     })
     
-    output$graph_Pt_4 = renderPlot({
-        plot_lambert(file = spectrum_4(),
-                      display_theoretical_values = input$theory_4)
-    })
-    
-    output$graph_MM_4 = renderPlot({
-        plot_lambertMM(file = spectrum_4(),
-                       display_theoretical_values = input$theory_4,
-                       display_fit_values = input$fit_4)
-    })
-    
-    output$error_4 = renderText({
-        error = round(spectrum_4()$error,2)
+    #should use kmapp but now just using km
+    output$error0 = renderText({
+        vmax0 = k2 * as.numeric(input$e0)
+        count = length(values0$df$substrates[!is.na(values0$df$substrates)])
+        theo = vmax0 * as.numeric(values0$df$substrates[1:count])/(km + as.numeric(values0$df$substrates[1:count]))
+        exp = input$vmax0 * as.numeric(values0$df$substrates[1:count])/(input$km0 + as.numeric(values0$df$substrates[1:count]))
+        error = round(sum(sqrt((theo - exp)^2))/as.numeric(input$e0), 2)
         paste("Error:", error)
     })
     
-    output$theory_values = renderText({
-        file =  spectrum_4()
-        km = file$kmapp
-        vmax = file$vapp
+    output$theory_values0 = renderText({
         paste("Theorectical values")
-        if(input$theory_4){
-            paste("Km:", km, ",", "Vmax:", vmax)
+        vmax0 = k2 * as.numeric(input$e0)
+        if(input$theory0){
+            paste("Km:", km, ",", "Vmax:", vmax0)
         }
         else{
             paste("Km:", " ", ",",  "Vmax:", " ")
@@ -224,7 +112,7 @@ server = function(input, output, session) {
 
     calcPt = reactive({
         out = lambertPt(s = as.numeric(input$s1),
-                        e = as.numeric(input$e_1),
+                        e = as.numeric(input$e1),
                         k2 = k2,
                         km = km,
                         s_max = s_max,
@@ -241,7 +129,7 @@ server = function(input, output, session) {
     
 # Exercise 2
     output$enzyme2 = renderText({
-        paste(input$e1, " M")
+        paste(input$e, " M")
     })
     
     output$instruction_2 = renderUI({
@@ -253,13 +141,13 @@ server = function(input, output, session) {
     pt_error2 = matrix(nrow = 20, ncol = time_max + 1)
     slopes2 = rep(NA, 20)
     intercepts2 = rep(NA, 20)
-    #e2 and time are determined by excercise 1
-    time2 = 4000
+    #time should be determined by ex1
+    time2 = calc_pt()$time
     values2 = reactiveValues(df = data.frame("substrates" = substrates2, "slopes" = slopes2, "intercepts" = intercepts2, "pt_error" = pt_error2, "pt" = pt2))
     newEntry2 = observeEvent(input$add_s2, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         if(!(input$s2 %in% values2$df$substrates) && count < 5){
-            file = lambertPt("s" = input$s2, "e" = as.numeric(input$e1), "time" = time2, "k2" = k2, "km" = km, "pinf_ratio" = pinf_ratio, "sd" = sd)
+            file = lambertPt(s = input$s2, e = as.numeric(input$e), time = time2, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, sd = sd)
             values2$df$substrates[(count + 1)] = input$s2
             values2$df[(count + 1), (5 + time_max) : (5 + time_max + time2)]= file$pt
             values2$df[(count + 1), 4 : (4 + time2)] = file$pt_error
@@ -292,7 +180,7 @@ server = function(input, output, session) {
         
 #Exercise 3
     output$enzyme3 = renderText({
-        paste(input$e1, " M")
+        paste(input$e, " M")
     })
     
     output$instruction_3 = renderUI({
@@ -303,7 +191,7 @@ server = function(input, output, session) {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         #you can add "count >= 5" to the following condition but maybe too strict
         if(!(input$s3 %in% values2$df$substrates) && count < 10){
-            file = lambertPt("s" = input$s3, "e" = as.numeric(input$e1), "time" = time2, "k2" = k2, "km" = km, "pinf_ratio" = pinf_ratio, "sd" = sd)
+            file = lambertPt(s = input$s3, e = as.numeric(input$e), time = time2, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, sd = sd)
             values2$df$substrates[(count + 1)] = input$s3
             values2$df[(count + 1), (5 + time_max) : (5 + time_max + time2)]= file$pt
             values2$df[(count + 1), 4 : (4 + time2)] = file$pt_error
@@ -336,16 +224,16 @@ server = function(input, output, session) {
     
 #Exercise 4
     output$enzyme4 = renderText({
-        paste(input$e1, " M")
+        paste(input$e, " M")
     })
     
     #should use kmapp but now just using km
     output$error4 = renderText({
-        vmax4 = k2 * as.numeric(input$e1)
+        vmax4 = k2 * as.numeric(input$e)
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         theo = vmax4 * as.numeric(values2$df$substrates[1:count])/(km + as.numeric(values2$df$substrates[1:count]))
         exp = input$vmax4 * as.numeric(values2$df$substrates[1:count])/(input$km4 + as.numeric(values2$df$substrates[1:count]))
-        error = round(sum(sqrt((theo - exp)^2))/as.numeric(input$e1), 2)
+        error = round(sum(sqrt((theo - exp)^2))/as.numeric(input$e), 2)
         paste("Error:", error)
     })
     

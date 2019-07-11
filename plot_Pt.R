@@ -1,6 +1,6 @@
 source("change_color.R")
 plot_Pt = function(file,
-                   time = 1000, s_max = 10, pinf_ratio = 0.9818, kmapp = 1, vapp = 5000 * 10^(-6),
+                   time = 1000, s_max = 10, time_max = 10000, pinf_ratio = 0.9818, kmapp = 1, vapp = 5000 * 10^(-6),
                    display_theoretical_values = FALSE){
   
   count = length(file$substrates[!is.na(file$substrates)])
@@ -20,12 +20,12 @@ plot_Pt = function(file,
   else{
     plot(x = -100, y = -100, type = "p",
          xlim = c(0, time), ylim = c(0, ymax), xlab = "", ylab = "")
-    mtext("time (s)", side = 1, line = 2, cex = 1.5)
-    mtext("product concentration, [P] (M)", side = 2, line = 2, cex = 1.5)
+    mtext("time (s)", side = 1, line = 3, cex = 1.5)
+    mtext("product concentration, [P] (M)", side = 2, line = 3, cex = 1.5)
     # mtext(main_title, side = 3, line = 1.5, cex = 2.5)
     grid(col = "black")
     if(display_theoretical_values){
-      matlines(x = t(t), y = file[1 : count, (5 + time_max) : (5 + time + time_max)], type = "l", lty = 2, lwd = 2, col = "red")
+      matlines(x = t, y = t(file[1 : count, (5 + time_max) : (5 + time + time_max)]), type = "l", lty = 2, lwd = 2, col = "red")
     }
     matlines(x = t, y = t(file[1 : count, 4 : (4 + time)]), type = "l", lty = 1, lwd = 2, col = "black")
     
