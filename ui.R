@@ -27,7 +27,7 @@ ui<-fluidPage(
                                                 min = 0, max = 10, value = 2, step = 0.01),
                                     sliderInput("vmax0", "Vmax [M/s]",
                                                 min = 0, max = 0.01 , value = 0.01, step = 0.0001),
-                                    verbatimTextOutput("error0"),
+                                    htmlOutput("error0"),
                                     checkboxInput("theory0", "Display theoretical values (red)", value = FALSE),
                                     verbatimTextOutput("theory_values0")
                                   ),
@@ -57,7 +57,7 @@ ui<-fluidPage(
                                            wellPanel(
                                              selectInput("e", "Determine enzyme concentration (M)",
                                                          choices = list("1.0 M" = 1, "0.1 M" = 0.1, "100 μM" = 100 * 10^(-6), "10 μM" = 10 * 10^(-6)),
-                                                         selected = NULL)
+                                                         selected = 100 * 10^(-6))
                                            )
                                     ),
                                     column(9,
@@ -73,18 +73,15 @@ ui<-fluidPage(
                                              verbatimTextOutput("enzyme2"),
                                              sliderInput("s2", "Substrate Concentration (M)",
                                                          min = 0, max = 10, value = 1, step = 0.01),
-                                             actionButton("add_s2", "Do an experiment")
-                                           )),
-                                    column(9,
-                                           plotOutput("graph_Pt2", height = "500px")
-                                    )
-                                  ),
-                                  fluidRow(
-                                    column(3, align = "center",
-                                           wellPanel(tableOutput("table2"))
+                                             actionButton("add_s2", "Do an experiment"),
+                                             actionButton("reset2", "Reset Ex2")
                                            ),
-                                    column(9, 
-                                           wellPanel(htmlOutput("instruction_2")))
+                                           wellPanel(tableOutput("table2"))
+                                    ),
+                                    column(9,
+                                           plotOutput("graph_Pt2", height = "500px"),
+                                           wellPanel(htmlOutput("instruction_2"))
+                                    )
                                   )
                           ),
                          
@@ -96,19 +93,17 @@ ui<-fluidPage(
                                              verbatimTextOutput("enzyme3"),
                                              sliderInput("s3", "Substrate Concentration (M)",
                                                          min = 0, max = 10, value = 1, step = 0.01),
-                                             actionButton("add_s3", "Do an experiment")
-                                           )),
-                                    column(9,
-                                           plotOutput("graph_MM3", height = "500px")
-                                    )
-                                  ),
-                                  fluidRow(
-                                    column(3, align = "center",
+                                             actionButton("add_s3", "Do an experiment"),
+                                             actionButton("reset3", "Reset Ex3")
+                                           ),
                                            wellPanel(tableOutput("table3"))
                                     ),
-                                    column(9, 
-                                           wellPanel(htmlOutput("instruction_3")))
+                                    column(9,
+                                           plotOutput("graph_MM3", height = "500px"),
+                                           wellPanel(htmlOutput("instruction_3"))
+                                    )
                                   )
+                              
                          ),
                          
                          tabPanel("Exercise 4",
@@ -121,21 +116,16 @@ ui<-fluidPage(
                                                          min = 0, max = 10, value = 2, step = 0.01),
                                              sliderInput("vmax4", "Vmax [M/s]",
                                                          min = 0, max = 0.01 , value = 0.01, step = 0.0001),
-                                             verbatimTextOutput("error4"),
+                                             htmlOutput("error4"),
                                              checkboxInput("theory4", "Display Theoretical Values")
-                                           )),
-                                    column(9,
-                                           plotOutput("graph_MM4", height = "500px")
-                                    )
-                                  ),
-                                  fluidRow(
-                                    column(3, align = "center",
+                                           ),
                                            wellPanel(tableOutput("table4"))
                                     ),
-                                    column(9, 
-                                           wellPanel(htmlOutput("instruction_4")))
+                                    column(9,
+                                           plotOutput("graph_MM4", height = "500px"),
+                                           wellPanel(htmlOutput("instruction_4"))
+                                    )
                                   )
                          )
-              
    )
 )

@@ -90,7 +90,7 @@ server = function(input, output, session) {
         theo = vmax0 * as.numeric(values0$df$substrates[1:count])/(km + as.numeric(values0$df$substrates[1:count]))
         exp = input$vmax0 * as.numeric(values0$df$substrates[1:count])/(input$km0 + as.numeric(values0$df$substrates[1:count]))
         error = round(sum(sqrt((theo - exp)^2))/as.numeric(input$e0), 2)
-        paste("Error:", error)
+        paste("<b>Error: ", error, "</b>")
     })
     
     output$theory_values0 = renderText({
@@ -136,14 +136,15 @@ server = function(input, output, session) {
         includeHTML("Captions/instruction_ex2.html")
     })
     
+    times = rep(NA, 20)
     substrates2 = rep(NA, 20)
     pt2 = matrix(nrow = 20, ncol = time_max + 1)
     pt_error2 = matrix(nrow = 20, ncol = time_max + 1)
     slopes2 = rep(NA, 20)
     intercepts2 = rep(NA, 20)
     #time should be determined by ex1
-    time2 = calc_pt()$time
-    values2 = reactiveValues(df = data.frame("substrates" = substrates2, "slopes" = slopes2, "intercepts" = intercepts2, "pt_error" = pt_error2, "pt" = pt2))
+    time2 = 4000
+    values2 = reactiveValues(df = data.frame("substrates" = substrates2, "slopes" = slopes2, "intercepts" = intercepts2, "pt_error" = pt_error2, "pt" = pt2, "times" = times))
     newEntry2 = observeEvent(input$add_s2, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         if(!(input$s2 %in% values2$df$substrates) && count < 5){
@@ -153,7 +154,13 @@ server = function(input, output, session) {
             values2$df[(count + 1), 4 : (4 + time2)] = file$pt_error
             values2$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
             values2$df$intercepts[(count + 1)] = file$intercepts_error
+            values2$df$times[(count + 1)] = count + 1
         } 
+    })
+    
+    reset2 = observeEvent(input$reset2, {
+        count = length(values2$df$substrates[!is.na(values2$df$substrates)])
+        values2$df[1:count, ] = NA
     })
 
     output$graph_Pt2 = renderPlot({
@@ -167,13 +174,13 @@ server = function(input, output, session) {
     
     output$table2 = renderTable({
         if(length(which(values2$df$substrates >=0)) < 5 && length(which(values2$df$substrates >=0)) > 0){
-            values2$df[1: length(which(values2$df$substrates >=0)), c("substrates", "slopes")]
+            values2$df[1: length(which(values2$df$substrates >=0)), c("times", "substrates", "slopes")]
         }
         else if (length(which(values2$df$substrates >=0)) >= 5){
-            values2$df[1:5, c("substrates", "slopes")]
+            values2$df[1:5, c("times", "substrates", "slopes")]
         }
         else{
-            values2$df[1, c("substrates", "slopes")]
+            values2$df[1, c("times", "substrates", "slopes")]
         }
     }, striped = TRUE, bordered = TRUE, align = "c", width = 300)
 
@@ -189,7 +196,7 @@ server = function(input, output, session) {
     
     newEntry3 = observeEvent(input$add_s3, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
-        #you can add "count >= 5" to the following condition but maybe too strict
+        #you may want to add "count >= 5" to the following condition which restrict student from skipping ex2
         if(!(input$s3 %in% values2$df$substrates) && count < 10){
             file = lambertPt(s = input$s3, e = as.numeric(input$e), time = time2, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, sd = sd)
             values2$df$substrates[(count + 1)] = input$s3
@@ -197,7 +204,15 @@ server = function(input, output, session) {
             values2$df[(count + 1), 4 : (4 + time2)] = file$pt_error
             values2$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
             values2$df$intercepts[(count + 1)] = file$intercepts_error
+            values2$df$times[(count + 1)] = count + 1
         } 
+    })
+    
+    reset3 = observeEvent(input$reset3, {
+        count = length(values2$df$substrates[!is.na(values2$df$substrates)])
+        if(count > 5){
+            values2$df[5:count, ] = NA
+        }
     })
     
     output$graph_MM3 = renderPlot({
@@ -211,13 +226,13 @@ server = function(input, output, session) {
     
     output$table3 = renderTable({
         if(length(which(values2$df$substrates >=0)) < 10 && length(which(values2$df$substrates >=0)) > 0){
-            values2$df[1: length(which(values2$df$substrates >=0)), c("substrates", "slopes")]
+            values2$df[1: length(which(values2$df$substrates >=0)), c("times", "substrates", "slopes")]
         }
         else if (length(which(values2$df$substrates >=0)) >= 10){
-            values2$df[1:10, c("substrates", "slopes")]
+            values2$df[1:10, c("times", "substrates", "slopes")]
         }
         else{
-            values2$df[1, c("substrates", "slopes")]
+            values2$df[1, c("times", "substrates", "slopes")]
         }
     }, striped = TRUE, bordered = TRUE, align = "c", width = 300)
     
@@ -234,7 +249,7 @@ server = function(input, output, session) {
         theo = vmax4 * as.numeric(values2$df$substrates[1:count])/(km + as.numeric(values2$df$substrates[1:count]))
         exp = input$vmax4 * as.numeric(values2$df$substrates[1:count])/(input$km4 + as.numeric(values2$df$substrates[1:count]))
         error = round(sum(sqrt((theo - exp)^2))/as.numeric(input$e), 2)
-        paste("Error:", error)
+        paste("<b>Error from plots: ", error, "</b>")
     })
     
     output$instruction_4 = renderUI({
@@ -256,13 +271,13 @@ server = function(input, output, session) {
     
     output$table4 = renderTable({
         if(length(which(values2$df$substrates >=0)) < 10 && length(which(values2$df$substrates >=0)) > 0){
-            values2$df[1: length(which(values2$df$substrates >=0)), c("substrates", "slopes")]
+            values2$df[1: length(which(values2$df$substrates >=0)), c("times", "substrates", "slopes")]
         }
         else if (length(which(values2$df$substrates >=0)) >= 10){
-            values2$df[1:10, c("substrates", "slopes")]
+            values2$df[1:10, c("times", "substrates", "slopes")]
         }
         else{
-            values2$df[1, c("substrates", "slopes")]
+            values2$df[1, c("times", "substrates", "slopes")]
         }
     }, striped = TRUE, bordered = TRUE, align = "c", width = 300)
 }

@@ -3,7 +3,7 @@ simple_plot_Pt = function(file,
                           display_theoretical_values = FALSE){
   
   t = seq(0, file$time)
-  pinf = pinf_ratio * file$s_max
+  pinf = file$pinf_ratio * file$s_max
   pt_max = pinf - file$kmapp * lambertW({(pinf/file$kmapp) * exp((pinf - file$vapp * file$time)/file$kmapp)})
   ymax = 1.1 * file$s_max
   plot(x = -100, y = -100, type = "p",
