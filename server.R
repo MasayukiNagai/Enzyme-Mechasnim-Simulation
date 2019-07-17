@@ -8,12 +8,14 @@ source("plot_MM.R")
 source("lambertPt.R")
 source("simple_plot_Pt.R")
 
+#change the values of variables 
 km = 1
 k2 = 50
 pinf_ratio = 0.9818
-sd = 0.03
+sd = 0.01
 s_max = 10
-time_max = 10000
+time_max = 100
+interval = 4000
 
 server = function(input, output, session) {
 
@@ -23,12 +25,14 @@ server = function(input, output, session) {
     })
     
 #Overview
+    #create vectors/matrices to compose a data frame which stores data entered by users
     substrates0 = rep(NA, 20)
     pt0 = matrix(nrow = 20, ncol = time_max + 1)
     pt_error0 = matrix(nrow = 20, ncol = time_max + 1)
     slopes0 = rep(NA, 20)
     intercepts0 = rep(NA, 20)
     values0 = reactiveValues(df = data.frame("substrates" = substrates0, "slopes" = slopes0, "intercepts" = intercepts0, "pt_error" = pt_error0, "pt" = pt0))
+    #when users put add button, this checks if the value is already in the data frame or not and if not it adds the value and other related valeus calculated using the concentration
     newEntry0 = observeEvent(input$add_s0, {
         count = length(values0$df$substrates[!is.na(values0$df$substrates)])
         if(!(input$s0 %in% values0$df$substrates) && count < 10){
@@ -61,6 +65,7 @@ server = function(input, output, session) {
         updateSliderInput(session, "time0", value = fixed_time)
     })
     
+    #plot Pt graph
     output$graph_Pt0 = renderPlot({
         plot_Pt(file = values0$df,
                 time = input$time0,
@@ -71,6 +76,7 @@ server = function(input, output, session) {
                 display_theoretical_values = input$theory0)
     })
     
+    #plot MM graph
     output$graph_MM0 = renderPlot({
         plot_MM(file = values0$df,
                 time = input$time0,
@@ -83,7 +89,7 @@ server = function(input, output, session) {
                 display_fit_values = input$fit0)
     })
     
-    #should use kmapp but now just using km
+    #calculate error (this uses Km not Kapp so if you appy inhibitor values, this needs to be fixed as well)
     output$error0 = renderText({
         vmax0 = k2 * as.numeric(input$e0)
         count = length(values0$df$substrates[!is.na(values0$df$substrates)])
@@ -93,6 +99,7 @@ server = function(input, output, session) {
         paste("<b>Error: ", error, "</b>")
     })
     
+    #display theoretical values
     output$theory_values0 = renderText({
         paste("Theorectical values")
         vmax0 = k2 * as.numeric(input$e0)
@@ -110,6 +117,7 @@ server = function(input, output, session) {
     #     includeHTML("Captions/instruction_ex1.html")
     # })
 
+    
     calcPt = reactive({
         out = lambertPt(s = as.numeric(input$s1),
                         e = as.numeric(input$e1),
@@ -136,22 +144,23 @@ server = function(input, output, session) {
     #     includeHTML("Captions/instruction_ex2.html")
     # })
     
+    #time should be determined by ex1
+    time2 = 15
+    
     times = rep(NA, 20)
     substrates2 = rep(NA, 20)
-    pt2 = matrix(nrow = 20, ncol = time_max + 1)
-    pt_error2 = matrix(nrow = 20, ncol = time_max + 1)
+    pt2 = matrix(nrow = 20, ncol = interval)
+    pt_error2 = matrix(nrow = 20, ncol = interval)
     slopes2 = rep(NA, 20)
     intercepts2 = rep(NA, 20)
-    #time should be determined by ex1
-    time2 = 4000
     values2 = reactiveValues(df = data.frame("substrates" = substrates2, "slopes" = slopes2, "intercepts" = intercepts2, "pt_error" = pt_error2, "pt" = pt2, "times" = times))
     newEntry2 = observeEvent(input$add_s2, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         if(!(input$s2 %in% values2$df$substrates) && count < 5){
-            file = lambertPt(s = input$s2, e = as.numeric(input$e), time = time2, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, sd = sd)
+            file = lambertPt(s = input$s2, e = as.numeric(input$e), time = time2, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd)
             values2$df$substrates[(count + 1)] = input$s2
-            values2$df[(count + 1), (5 + time_max) : (5 + time_max + time2)]= file$pt
-            values2$df[(count + 1), 4 : (4 + time2)] = file$pt_error
+            values2$df[(count + 1), (4 + interval) : (3 + interval + interval)]= file$pt
+            values2$df[(count + 1), 4 : (3 + interval)] = file$pt_error
             values2$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
             values2$df$intercepts[(count + 1)] = file$intercepts_error
             values2$df$times[(count + 1)] = formatC(count + 1, format = "d")
@@ -166,10 +175,12 @@ server = function(input, output, session) {
     output$graph_Pt2 = renderPlot({
         plot_Pt(file = values2$df,
                 #time is determined from exercise 1
-                time = 4000,
+                time = time2,
+                interval = interval,
                 s_max = s_max,
                 pinf_ratio = pinf_ratio,
-                kmap = km)
+                kmap = km,
+                vapp = k2 * as.numeric(input$e))
     })
     
     output$table2 = renderTable({
@@ -198,10 +209,10 @@ server = function(input, output, session) {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         #you may want to add "count >= 5" to the following condition which restrict student from skipping ex2
         if(!(input$s3 %in% values2$df$substrates) && count < 10){
-            file = lambertPt(s = input$s3, e = as.numeric(input$e), time = time2, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, sd = sd)
+            file = lambertPt(s = input$s3, e = as.numeric(input$e), time = time2, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd)
             values2$df$substrates[(count + 1)] = input$s3
-            values2$df[(count + 1), (5 + time_max) : (5 + time_max + time2)]= file$pt
-            values2$df[(count + 1), 4 : (4 + time2)] = file$pt_error
+            values2$df[(count + 1), (4 + interval) : (3 + interval + interval)]= file$pt
+            values2$df[(count + 1), 4 : (3 + interval)] = file$pt_error
             values2$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
             values2$df$intercepts[(count + 1)] = file$intercepts_error
             values2$df$times[(count + 1)] = formatC(count + 1, format = "d")
@@ -217,11 +228,10 @@ server = function(input, output, session) {
     
     output$graph_MM3 = renderPlot({
         plot_MM(file = values2$df,
-                #time is determined from exercise 1
-                time = 4000,
                 s_max = s_max,
                 pinf_ratio = pinf_ratio,
-                kmapp = km)
+                kmapp = km,
+                vapp = k2 * as.numeric(input$e))
     })
     
     output$table3 = renderTable({
@@ -257,11 +267,10 @@ server = function(input, output, session) {
     
     output$graph_MM4 = renderPlot({
         plot_MM(file = values2$df,
-                #time is determined from exercise 1
-                time = 4000,
                 s_max = s_max,
                 pinf_ratio = pinf_ratio,
                 kmapp = km,
+                vapp = k2 * as.numeric(input$e),
                 km_pre = input$km4,
                 vmax_pre = input$vmax4,
                 display_theoretical_values = input$theory4,

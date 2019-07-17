@@ -40,7 +40,7 @@ ui<-fluidPage(
                                     column(3,
                                            wellPanel(
                                              selectInput("e1", "Enzyme concentration (M)",
-                                                         choices = list("1.0 M" = 1, "0.1 M" = 0.1, "100 μM" = 100 * 10^(-6), "10 μM" = 10 * 10^(-6)),
+                                                         choices = list("0.1 M" = 10000, "100 μM" = 100, "10 μM" = 10, "0.02 μM" = 0.02, "1 nM" = 0.001),
                                                          selected = NULL),
                                              selectInput("s1", "Substrate concentration (M)",
                                                          choices = list("0.5 M" = 0.5, "1.0 M" = 1, "3.0 M" = 3, "7.0 M" = 7, "10.0 M" = 10),
@@ -55,8 +55,8 @@ ui<-fluidPage(
                                     column(3,
                                            wellPanel(
                                              selectInput("e", "Determine enzyme concentration (M)",
-                                                         choices = list("1.0 M" = 1, "0.1 M" = 0.1, "100 μM" = 100 * 10^(-6), "10 μM" = 10 * 10^(-6)),
-                                                         selected = 100 * 10^(-6))
+                                                         choices = list("0.1 M" = 10000, "100 μM" = 100, "10 μM" = 10, "0.02 μM" = 0.02, "1 nM" = 0.001),
+                                                         selected = 0.02)
                                            )
                                     ),
                                     column(9,
@@ -70,7 +70,7 @@ ui<-fluidPage(
                                            wellPanel(
                                              htmlOutput("enzyme2"),
                                              HTML("<br>"),
-                                             sliderInput("s2", "Substrate Concentration (M)",
+                                             sliderInput("s2", "Substrate Concentration (μM)",
                                                          min = 0, max = 10, value = 1, step = 0.1),
                                              actionButton("add_s2", "Do an experiment"),
                                              actionButton("reset2", "Reset Ex2")
@@ -90,7 +90,7 @@ ui<-fluidPage(
                                            wellPanel(
                                              htmlOutput("enzyme3"),
                                              HTML("<br>"),
-                                             sliderInput("s3", "Substrate Concentration (M)",
+                                             sliderInput("s3", "Substrate Concentration (μM)",
                                                          min = 0, max = 10, value = 1, step = 0.1),
                                              actionButton("add_s3", "Do an experiment"),
                                              actionButton("reset3", "Reset Ex3")
@@ -111,10 +111,10 @@ ui<-fluidPage(
                                            wellPanel(
                                              htmlOutput("enzyme4"),
                                              HTML("<br>"),
-                                             sliderInput("km4", "Km[M]",
+                                             sliderInput("km4", "Km[μM]",
                                                          min = 0, max = 10, value = 2, step = 0.01),
-                                             sliderInput("vmax4", "Vmax [M/s]",
-                                                         min = 0, max = 0.01 , value = 0.01, step = 0.0001),
+                                             sliderInput("vmax4", "Vmax [μM/s]",
+                                                         min = 0, max = 2 , value = 0.5, step = 0.01),
                                              htmlOutput("error4"),
                                              checkboxInput("theory4", "Display Theoretical Values")
                                            ),
