@@ -106,9 +106,9 @@ server = function(input, output, session) {
     
 # Exercise 1
 
-    output$instruction_1 = renderUI({
-        includeHTML("Captions/instruction_ex1.html")
-    })
+    # output$instruction_1 = renderUI({
+    #     includeHTML("Captions/instruction_ex1.html")
+    # })
 
     calcPt = reactive({
         out = lambertPt(s = as.numeric(input$s1),
@@ -129,12 +129,12 @@ server = function(input, output, session) {
     
 # Exercise 2
     output$enzyme2 = renderText({
-        paste(input$e, " M")
+        paste("Enzyme concentration from Ex1:", "<b>", input$e, " M", "</b>")
     })
     
-    output$instruction_2 = renderUI({
-        includeHTML("Captions/instruction_ex2.html")
-    })
+    # output$instruction_2 = renderUI({
+    #     includeHTML("Captions/instruction_ex2.html")
+    # })
     
     times = rep(NA, 20)
     substrates2 = rep(NA, 20)
@@ -154,7 +154,7 @@ server = function(input, output, session) {
             values2$df[(count + 1), 4 : (4 + time2)] = file$pt_error
             values2$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
             values2$df$intercepts[(count + 1)] = file$intercepts_error
-            values2$df$times[(count + 1)] = count + 1
+            values2$df$times[(count + 1)] = formatC(count + 1, format = "d")
         } 
     })
     
@@ -187,12 +187,12 @@ server = function(input, output, session) {
         
 #Exercise 3
     output$enzyme3 = renderText({
-        paste(input$e, " M")
+        paste("Enzyme concentration from Ex1:", "<b>", input$e, " M", "</b>")
     })
     
-    output$instruction_3 = renderUI({
-        includeHTML("Captions/instruction_ex3.html")
-    })
+    # output$instruction_3 = renderUI({
+    #     includeHTML("Captions/instruction_ex3.html")
+    # })
     
     newEntry3 = observeEvent(input$add_s3, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
@@ -204,14 +204,14 @@ server = function(input, output, session) {
             values2$df[(count + 1), 4 : (4 + time2)] = file$pt_error
             values2$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
             values2$df$intercepts[(count + 1)] = file$intercepts_error
-            values2$df$times[(count + 1)] = count + 1
+            values2$df$times[(count + 1)] = formatC(count + 1, format = "d")
         } 
     })
     
     reset3 = observeEvent(input$reset3, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         if(count > 5){
-            values2$df[5:count, ] = NA
+            values2$df[6:count, ] = NA
         }
     })
     
@@ -238,16 +238,15 @@ server = function(input, output, session) {
     
     
 #Exercise 4
+    
     output$enzyme4 = renderText({
-        paste(input$e, " M")
+        paste("Enzyme concentration from Ex1:", "<b>", input$e, " M", "</b>")
     })
     
-    #should use kmapp but now just using km
     output$error4 = renderText({
-        vmax4 = k2 * as.numeric(input$e)
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
-        theo = vmax4 * as.numeric(values2$df$substrates[1:count])/(km + as.numeric(values2$df$substrates[1:count]))
-        exp = input$vmax4 * as.numeric(values2$df$substrates[1:count])/(input$km4 + as.numeric(values2$df$substrates[1:count]))
+        theo = as.numeric(input$vmax4) * as.numeric(values2$df$substrates[1:count])/(as.numeric(input$km4) + as.numeric(values2$df$substrates[1:count]))
+        exp = as.numeric(values2$df$slopes[1:count])
         error = round(sum(sqrt((theo - exp)^2))/as.numeric(input$e), 2)
         paste("<b>Error from plots: ", error, "</b>")
     })

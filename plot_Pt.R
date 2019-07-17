@@ -34,6 +34,6 @@ plot_Pt = function(file,
     yval2 = as.numeric(file$intercepts[1:count]) + as.numeric(file$slopes[1:count]) * time
     yvalues = rbind(yval1, yval2)
     color = unlist(lapply(as.numeric(file$slopes[1:count])/vapp, change_color))
-    matlines(x = xval, y = yvalues, type = "l", lty = 2, lwd = 2, col = color)
+    matlines(x = xval, y = yvalues, type = "l", lty = 2, lwd = 3, col = color)
   }
 }

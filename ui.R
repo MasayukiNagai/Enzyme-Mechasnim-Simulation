@@ -21,7 +21,6 @@ ui<-fluidPage(
                                     actionButton("add_s0", "Do an experiment"),
                                     sliderInput("time0", "Time (s)",
                                                 min = 0, max = 10000, value = 1000, step = 10),
-                                    hr(),
                                     checkboxInput("fit0", "Predict values (blue)", value = FALSE),
                                     sliderInput("km0", "Km[M]",
                                                 min = 0, max = 10, value = 2, step = 0.01),
@@ -69,18 +68,18 @@ ui<-fluidPage(
                                   fluidRow(
                                     column(3,
                                            wellPanel(
-                                             h5("Enzyme concentration from exercise 1"),
-                                             verbatimTextOutput("enzyme2"),
+                                             htmlOutput("enzyme2"),
+                                             HTML("<br>"),
                                              sliderInput("s2", "Substrate Concentration (M)",
-                                                         min = 0, max = 10, value = 1, step = 0.01),
+                                                         min = 0, max = 10, value = 1, step = 0.1),
                                              actionButton("add_s2", "Do an experiment"),
                                              actionButton("reset2", "Reset Ex2")
                                            ),
                                            wellPanel(tableOutput("table2"))
                                     ),
                                     column(9,
-                                           plotOutput("graph_Pt2", height = "500px"),
-                                           wellPanel(htmlOutput("instruction_2"))
+                                           plotOutput("graph_Pt2", height = "800px")
+                                           # wellPanel(htmlOutput("instruction_2"))
                                     )
                                   )
                           ),
@@ -89,18 +88,18 @@ ui<-fluidPage(
                                   fluidRow(
                                     column(3,
                                            wellPanel(
-                                             h5("Enzyme concentration from exercise 1"),
-                                             verbatimTextOutput("enzyme3"),
+                                             htmlOutput("enzyme3"),
+                                             HTML("<br>"),
                                              sliderInput("s3", "Substrate Concentration (M)",
-                                                         min = 0, max = 10, value = 1, step = 0.01),
+                                                         min = 0, max = 10, value = 1, step = 0.1),
                                              actionButton("add_s3", "Do an experiment"),
                                              actionButton("reset3", "Reset Ex3")
                                            ),
                                            wellPanel(tableOutput("table3"))
                                     ),
                                     column(9,
-                                           plotOutput("graph_MM3", height = "500px"),
-                                           wellPanel(htmlOutput("instruction_3"))
+                                           plotOutput("graph_MM3", height = "800px")
+                                           # wellPanel(htmlOutput("instruction_3"))
                                     )
                                   )
                               
@@ -110,8 +109,8 @@ ui<-fluidPage(
                                   fluidRow(
                                     column(3,
                                            wellPanel(
-                                             h5("Enzyme concentration from exercise 1"),
-                                             verbatimTextOutput("enzyme4"),
+                                             htmlOutput("enzyme4"),
+                                             HTML("<br>"),
                                              sliderInput("km4", "Km[M]",
                                                          min = 0, max = 10, value = 2, step = 0.01),
                                              sliderInput("vmax4", "Vmax [M/s]",
@@ -122,8 +121,8 @@ ui<-fluidPage(
                                            wellPanel(tableOutput("table4"))
                                     ),
                                     column(9,
-                                           plotOutput("graph_MM4", height = "500px"),
-                                           wellPanel(htmlOutput("instruction_4"))
+                                           plotOutput("graph_MM4", height = "800px")
+                                           # wellPanel(htmlOutput("instruction_4"))
                                     )
                                   )
                          )

@@ -26,11 +26,13 @@ plot_MM = function(file, time = 1000,
     v_max = vapp
     km = kmapp
     if(display_theoretical_values){
-      curve(v_max * x/(km + x), 0, s_max, add = TRUE, type = "l", lwd = 2, lty = 2, col = "red")
-      abline(h = vapp, lwd = 2, lty = 2, col = "red")
+      curve(v_max * x/(km + x), 0, s_max, add = TRUE, type = "l", lwd = 3, lty = 2, col = "red")
+      lines(x = km, y = vapp/2, type = "p", pch = 5, col = "red", cex = 2.5, lwd = 2)
+      abline(h = vapp, lwd = 3, lty = 2, col = "red")
     }
     if(display_fit_values){
-      curve(vmax_pre * x/(km_pre + x), 0, s_max, add = TRUE, type = "l", lwd = 2, lty = 2, col = "blue")
+      curve(vmax_pre * x/(km_pre + x), 0, s_max, add = TRUE, type = "l", lwd = 2, lty = 2, col = "blueviolet")
+      lines(x = km_pre, y = vmax_pre/2, type = "p", pch = 5, col = "blueviolet", cex = 2.3, lwd = 2)
     }
   }
 }
