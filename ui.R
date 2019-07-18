@@ -149,7 +149,8 @@ ui<-fluidPage(
                                              sliderInput("vmax4", "Vmax [μM/s]",
                                                          min = 0, max = 2 , value = 0.5, step = 0.01),
                                              htmlOutput("error4"),
-                                             checkboxInput("theory4", "Display Theoretical Values")
+                                             checkboxInput("theory4", "Display Theoretical Values"),
+                                             checkboxInput("calculated4", "Display Calculated Values")
                                            ),
                                            wellPanel(tableOutput("table4"))
                                     ),

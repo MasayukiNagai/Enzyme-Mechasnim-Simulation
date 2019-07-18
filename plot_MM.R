@@ -2,7 +2,7 @@ source("change_color.R")
 plot_MM = function(file,
                    s_max = 10, pinf_ratio = 0.9818, kmapp = 1, vapp = 5000 * 10^(-6),
                    km_pre= 2, vmax_pre = 1000 * 10^(-6),
-                   display_theoretical_values = FALSE, display_fit_values = FALSE){
+                   display_theoretical_values = FALSE, display_calculated_values = FALSE, display_fit_values = FALSE){
   
   count = length(file$substrates[!is.na(file$substrates)])
   ymax = 1.1 * vapp
@@ -23,12 +23,18 @@ plot_MM = function(file,
     grid(col = "black")
     color = unlist(lapply(as.numeric(file$slopes[1:count])/vapp, change_color))
     lines(x = file$substrates[1:count], y = file$slopes[1:count], type = "p", pch = 19, col = color, cex = 2)
-    v_max = vapp
-    km = kmapp
     if(display_theoretical_values){
-      curve(v_max * x/(km + x), 0, s_max, add = TRUE, type = "l", lwd = 3, lty = 2, col = "red")
-      lines(x = km, y = vapp/2, type = "p", pch = 5, col = "red", cex = 2.5, lwd = 2)
+      curve(vapp * x/(kmapp + x), 0, s_max, add = TRUE, type = "l", lwd = 3, lty = 2, col = "red")
+      lines(x = kmapp, y = vapp/2, type = "p", pch = 5, col = "red", cex = 2.5, lwd = 2)
       abline(h = vapp, lwd = 3, lty = 2, col = "red")
+    }
+    if(display_calculated_values){
+      y = as.numeric(file$slopes[1:count])
+      s = as.numeric(file$substrates[1:count])
+      m = nls(y ~ a * s/(b + s), start = list(a = vapp, b = kmapp))
+      vmc = coef(m)[1]
+      kmc = coef(m)[2]
+      curve(vmc * x/(kmc + x), 0, s_max, add = TRUE, type = "l", lwd = 3, lty = 2, col = "darkgreen")
     }
     if(display_fit_values){
       curve(vmax_pre * x/(km_pre + x), 0, s_max, add = TRUE, type = "l", lwd = 2, lty = 2, col = "blueviolet")

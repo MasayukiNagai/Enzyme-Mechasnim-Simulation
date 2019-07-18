@@ -337,6 +337,7 @@ server = function(input, output, session) {
                 km_pre = input$km4,
                 vmax_pre = input$vmax4,
                 display_theoretical_values = input$theory4,
+                display_calculated_values = input$calculated4,
                 display_fit_values = TRUE)
     })
     
