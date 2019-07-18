@@ -18,7 +18,7 @@ sd = 0.01
 #the maximum value of substrates (slider)
 s_max = 10
 #the number of points you get for each data
-interval = 4000
+interval = 0.1
 
 server = function(input, output, session) {
 
@@ -145,6 +145,56 @@ server = function(input, output, session) {
     output$graph_Pt1 = renderPlot({
         simple_plot_Pt(file = calcPt())
     })
+    
+# # Exercise 1 fixed
+#     
+#     output$instruction_1 = renderUI({
+#         includeHTML("Captions/instruction_ex1.html")
+#     })
+#     
+#     times1f = rep(NA, 20)
+#     substrates1f = rep(NA, 20)
+#     pt1f = matrix(nrow = 20, ncol = interval)
+#     pt_error1f = matrix(nrow = 20, ncol = interval)
+#     slopes1f = rep(NA, 20)
+#     intercepts1f = rep(NA, 20)
+#     values1f = reactiveValues(df = data.frame("substrates" = substrates1f, "slopes" = slopes1f, "intercepts" = intercepts1f, "pt_error" = pt_error1f, "pt" = pt1f, "times" = times1f))
+#     newEntry1f = observeEvent(input$add_s1f, {
+#         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
+#         if(!(input$s2 %in% values2$df$substrates) && count < 5){
+#             file = lambertPt(s = input$s1f, e = as.numeric(input$e1f), time = input$time1f, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd)
+#             values1f$df$substrates[(count + 1)] = input$s2
+#             values1f$df[(count + 1), (4 + interval) : (3 + interval + interval)]= file$pt
+#             values1f$df[(count + 1), 4 : (3 + interval)] = file$pt_error
+#             values1f$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
+#             values1f$df$intercepts[(count + 1)] = file$intercepts_error
+#             values1f$df$times[(count + 1)] = formatC(count + 1, format = "d")
+#         } 
+#     })
+#     
+#     reset1f = observeEvent(input$reset1f, {
+#         count = length(values1f$df$substrates[!is.na(values1f$df$substrates)])
+#         values1f$df[1:count, ] = NA
+#     })
+#     
+#     #calculate one sequence of pt 
+#     calcPt = reactive({
+#         out = lambertPt(s = as.numeric(input$s1),
+#                         e = as.numeric(input$e1),
+#                         k2 = k2,
+#                         km = km,
+#                         s_max = s_max,
+#                         pinf_ratio = pinf_ratio,
+#                         time = 300,
+#                         interval = interval,
+#                         sd = sd)
+#         out
+#     })
+#     
+#     #plot only one Pt graph
+#     output$graph_Pt1 = renderPlot({
+#         simple_plot_Pt(file = calcPt())
+#     })
 
     
 # Exercise 2
@@ -158,21 +208,22 @@ server = function(input, output, session) {
     
     #time should be determined by ex1
     time2 = 15
+    length2 = as.numeric(formatC((time2/interval + 1), format = "d"))
     
-    times = rep(NA, 20)
+    times2 = rep(NA, 20)
     substrates2 = rep(NA, 20)
-    pt2 = matrix(nrow = 20, ncol = interval)
-    pt_error2 = matrix(nrow = 20, ncol = interval)
+    pt2 = matrix(nrow = 20, ncol = length2)
+    pt_error2 = matrix(nrow = 20, ncol = length2)
     slopes2 = rep(NA, 20)
     intercepts2 = rep(NA, 20)
-    values2 = reactiveValues(df = data.frame("substrates" = substrates2, "slopes" = slopes2, "intercepts" = intercepts2, "pt_error" = pt_error2, "pt" = pt2, "times" = times))
+    values2 = reactiveValues(df = data.frame("substrates" = substrates2, "slopes" = slopes2, "intercepts" = intercepts2, "pt_error" = pt_error2, "pt" = pt2, "times" = times2))
     newEntry2 = observeEvent(input$add_s2, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         if(!(input$s2 %in% values2$df$substrates) && count < 5){
             file = lambertPt(s = input$s2, e = as.numeric(input$e), time = time2, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd)
             values2$df$substrates[(count + 1)] = input$s2
-            values2$df[(count + 1), (4 + interval) : (3 + interval + interval)]= file$pt
-            values2$df[(count + 1), 4 : (3 + interval)] = file$pt_error
+            values2$df[(count + 1), (4 + length2) : (3 + length2 + length2)]= file$pt
+            values2$df[(count + 1), 4 : (3 + length2)] = file$pt_error
             values2$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
             values2$df$intercepts[(count + 1)] = file$intercepts_error
             values2$df$times[(count + 1)] = formatC(count + 1, format = "d")
@@ -223,8 +274,8 @@ server = function(input, output, session) {
         if(!(input$s3 %in% values2$df$substrates) && count < 10){
             file = lambertPt(s = input$s3, e = as.numeric(input$e), time = time2, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd)
             values2$df$substrates[(count + 1)] = input$s3
-            values2$df[(count + 1), (4 + interval) : (3 + interval + interval)]= file$pt
-            values2$df[(count + 1), 4 : (3 + interval)] = file$pt_error
+            values2$df[(count + 1), (4 + length2) : (3 + length2 + length2)]= file$pt
+            values2$df[(count + 1), 4 : (3 + length2)] = file$pt_error
             values2$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
             values2$df$intercepts[(count + 1)] = file$intercepts_error
             values2$df$times[(count + 1)] = formatC(count + 1, format = "d")

@@ -65,6 +65,38 @@ ui<-fluidPage(
                                   )
                          ),
                          
+                         # tabPanel("Ex 1 fixed",
+                         #          fluidRow(
+                         #            column(3,
+                         #                   wellPanel(
+                         #                     selectInput("e1f", "Enzyme concentration (M)",
+                         #                                 choices = list("0.1 M" = 10000, "100 μM" = 100, "10 μM" = 10, "0.02 μM" = 0.02, "1 nM" = 0.001),
+                         #                                 selected = NULL),
+                         #                     selectInput("s1f", "Substrate concentration (M)",
+                         #                                 choices = list("0.5 μM" = 0.5, "1.0 μM" = 1, "3.0 μM" = 3, "7.0 μM" = 7, "10.0 μM" = 10),
+                         #                                 selected = NULL),
+                         #                     sliderInput("time1f", "time (s)",
+                         #                                 min = 0, max = 300, value = 20),
+                         #                     actionButton("ex1f", "Do an experiment"),
+                         #                     actionButton("reset1f", "Reset")
+                         #                   )),
+                         #            column(9,
+                         #                   plotOutput("graph_Pt1", height = "500px")
+                         #            )
+                         #          ),
+                         #          fluidRow(
+                         #            column(3,
+                         #                   wellPanel(
+                         #                     selectInput("ef", "Determine enzyme concentration (M)",
+                         #                                 choices = list("0.1 M" = 10000, "100 μM" = 100, "10 μM" = 10, "0.02 μM" = 0.02, "1 nM" = 0.001),
+                         #                                 selected = 0.02)
+                         #                   )
+                         #            ),
+                         #            column(9,
+                         #                   wellPanel(htmlOutput("instruction_1")))
+                         #          )
+                         # ),
+                         
                          tabPanel("Exercise 2",
                                   fluidRow(
                                     column(3,

@@ -1,10 +1,10 @@
 lambertPt = function(s = 1, e = 1, i = 0.30,
                      k1 = 1000, k_1 = 950, k2 = 50, km = NULL, ki1 = 0.20, ki2 = 0.15,
-                     s_max = 10, pinf_ratio = 0.9818, time = 20, interval = 1000, sd = 0,
+                     s_max = 10, pinf_ratio = 0.9818, time = 20, interval = 1, sd = 0,
                      game = c("Normal", "Competitive", "Uncompetitive", "Mixed")){
   
   game = match.arg(game)
-  t = seq(0, time, length.out = interval)
+  t = seq(0, time, by = interval)
   if(is.null(km)){
     km = (k_1 + k2)/ k1
   }
@@ -30,10 +30,10 @@ lambertPt = function(s = 1, e = 1, i = 0.30,
   pinf = pinf_ratio * s
   pt = pinf - kmapp * lambertW({(pinf/kmapp) * exp((pinf - vapp * t)/kmapp)})
   pt_error = pinf - kmapp * lambertW({(pinf/kmapp) * exp((pinf - vapp * t)/kmapp)}) + rnorm(t, mean = 0, sd = sd)
-  v_init = lm(pt[0:50]~t[0:50])
+  v_init = lm(pt[0:15]~t[0:15])
   slopes = as.numeric(v_init$coefficient[2])
   intercepts = as.numeric(v_init$coefficient[1])
-  v_init_error = lm(pt_error[0:50]~t[0:50])
+  v_init_error = lm(pt_error[0:15]~t[0:15])
   slopes_error = as.numeric(v_init_error$coefficient[2])
   intercepts_error = as.numeric(v_init_error$coefficient[1])
 
