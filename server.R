@@ -9,12 +9,15 @@ source("lambertPt.R")
 source("simple_plot_Pt.R")
 
 #change the values of variables 
+
 km = 1
 k2 = 50
 pinf_ratio = 0.9818
+#degree of deviation
 sd = 0.01
+#the maximum value of substrates (slider)
 s_max = 10
-time_max = 100
+#the number of points you get for each data
 interval = 4000
 
 server = function(input, output, session) {
@@ -27,8 +30,8 @@ server = function(input, output, session) {
 #Overview
     #create vectors/matrices to compose a data frame which stores data entered by users
     substrates0 = rep(NA, 20)
-    pt0 = matrix(nrow = 20, ncol = time_max + 1)
-    pt_error0 = matrix(nrow = 20, ncol = time_max + 1)
+    pt0 = matrix(nrow = 20, ncol = interval)
+    pt_error0 = matrix(nrow = 20, ncol = interval)
     slopes0 = rep(NA, 20)
     intercepts0 = rep(NA, 20)
     values0 = reactiveValues(df = data.frame("substrates" = substrates0, "slopes" = slopes0, "intercepts" = intercepts0, "pt_error" = pt_error0, "pt" = pt0))
@@ -36,13 +39,19 @@ server = function(input, output, session) {
     newEntry0 = observeEvent(input$add_s0, {
         count = length(values0$df$substrates[!is.na(values0$df$substrates)])
         if(!(input$s0 %in% values0$df$substrates) && count < 10){
-            file = lambertPt(s = input$s0, e = as.numeric(input$e0), k2 = k2, km = km, s_max = s_max, time_max = time_max, pinf_ratio = pinf_ratio, sd = sd)
+            file = lambertPt(s = input$s0, e = as.numeric(input$e0), time = input$time0, k2 = k2, km = km, s_max = s_max,  pinf_ratio = pinf_ratio, interval = interval, sd = sd)
             values0$df$substrates[(count + 1)] = input$s0
-            values0$df[(count + 1), (5 + time_max) : (5 + time_max + time_max)]= file$pt
-            values0$df[(count + 1), 4 : (4 + time_max)] = file$pt_error
+            values0$df[(count + 1), (4 + interval) : (3 + interval + interval)]= file$pt
+            values0$df[(count + 1), 4 : (3 + interval)] = file$pt_error
             values0$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
             values0$df$intercepts[(count + 1)] = file$intercepts_error
         } 
+    })
+    
+    #reset an existing data frame by pushing a button
+    reset0 = observeEvent(input$reset0, {
+        count = length(values0$df$substrates[!is.na(values0$df$substrates)])
+        values0$df[1:count, ] = NA
     })
     
     observe({
@@ -70,19 +79,20 @@ server = function(input, output, session) {
         plot_Pt(file = values0$df,
                 time = input$time0,
                 s_max = s_max,
-                time_max = time_max,
+                interval = interval,
                 pinf_ratio = pinf_ratio,
                 kmap = km,
+                vapp = k2 * as.numeric(input$e0),
                 display_theoretical_values = input$theory0)
     })
     
     #plot MM graph
     output$graph_MM0 = renderPlot({
         plot_MM(file = values0$df,
-                time = input$time0,
                 s_max = s_max,
                 pinf_ratio = pinf_ratio,
                 kmapp = km,
+                vapp = k2 * as.numeric(input$e0),
                 km_pre = input$km0,
                 vmax_pre = input$vmax0,
                 display_theoretical_values = input$theory0,
@@ -117,7 +127,7 @@ server = function(input, output, session) {
     #     includeHTML("Captions/instruction_ex1.html")
     # })
 
-    
+    #calculate one sequence of pt 
     calcPt = reactive({
         out = lambertPt(s = as.numeric(input$s1),
                         e = as.numeric(input$e1),
@@ -125,11 +135,13 @@ server = function(input, output, session) {
                         km = km,
                         s_max = s_max,
                         pinf_ratio = pinf_ratio,
-                        time_max = time_max,
+                        time = 300,
+                        interval = interval,
                         sd = sd)
         out
     })
 
+    #plot only one Pt graph
     output$graph_Pt1 = renderPlot({
         simple_plot_Pt(file = calcPt())
     })
@@ -137,7 +149,7 @@ server = function(input, output, session) {
     
 # Exercise 2
     output$enzyme2 = renderText({
-        paste("Enzyme concentration from Ex1:", "<b>", input$e, " M", "</b>")
+        paste("Enzyme concentration from Ex1:", "<b>", input$e, " μM", "</b>")
     })
     
     # output$instruction_2 = renderUI({
@@ -198,7 +210,7 @@ server = function(input, output, session) {
         
 #Exercise 3
     output$enzyme3 = renderText({
-        paste("Enzyme concentration from Ex1:", "<b>", input$e, " M", "</b>")
+        paste("Enzyme concentration from Ex1:", "<b>", input$e, " μM", "</b>")
     })
     
     # output$instruction_3 = renderUI({
@@ -250,7 +262,7 @@ server = function(input, output, session) {
 #Exercise 4
     
     output$enzyme4 = renderText({
-        paste("Enzyme concentration from Ex1:", "<b>", input$e, " M", "</b>")
+        paste("Enzyme concentration from Ex1:", "<b>", input$e, " μM", "</b>")
     })
     
     output$error4 = renderText({
