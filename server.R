@@ -9,9 +9,9 @@ source("lambertPt.R")
 source("simple_plot_Pt.R")
 
 #change the values of variables 
-
 km = 1
 k2 = 50
+#the max formation rate of product
 pinf_ratio = 0.9818
 #degree of deviation
 sd = 0.01
@@ -160,8 +160,8 @@ server = function(input, output, session) {
 #     intercepts1f = rep(NA, 20)
 #     values1f = reactiveValues(df = data.frame("substrates" = substrates1f, "slopes" = slopes1f, "intercepts" = intercepts1f, "pt_error" = pt_error1f, "pt" = pt1f, "times" = times1f))
 #     newEntry1f = observeEvent(input$add_s1f, {
-#         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
-#         if(!(input$s2 %in% values2$df$substrates) && count < 5){
+#         count = length(values1f$df$substrates[!is.na(values1f$df$substrates)])
+#         if(!(input$s1f %in% values1f$df$substrates) && count < 5){
 #             file = lambertPt(s = input$s1f, e = as.numeric(input$e1f), time = input$time1f, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd)
 #             values1f$df$substrates[(count + 1)] = input$s2
 #             values1f$df[(count + 1), (4 + interval) : (3 + interval + interval)]= file$pt
@@ -210,6 +210,7 @@ server = function(input, output, session) {
     time2 = 15
     length2 = as.numeric(formatC((time2/interval + 1), format = "d"))
     
+    #create vectors/matrices to compose a data frame which stores data entered by users
     times2 = rep(NA, 20)
     substrates2 = rep(NA, 20)
     pt2 = matrix(nrow = 20, ncol = length2)
@@ -217,6 +218,8 @@ server = function(input, output, session) {
     slopes2 = rep(NA, 20)
     intercepts2 = rep(NA, 20)
     values2 = reactiveValues(df = data.frame("substrates" = substrates2, "slopes" = slopes2, "intercepts" = intercepts2, "pt_error" = pt_error2, "pt" = pt2, "times" = times2))
+    #when users push the add button, this checks if the value is already in the data frame or not and if not it adds the value and other related valeus calculated using the concentration
+    #data frame can store up to 5 data
     newEntry2 = observeEvent(input$add_s2, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         if(!(input$s2 %in% values2$df$substrates) && count < 5){
@@ -230,22 +233,24 @@ server = function(input, output, session) {
         } 
     })
     
+    #reset an existing data frame when the reset button is pushed
     reset2 = observeEvent(input$reset2, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         values2$df[1:count, ] = NA
     })
 
+    #plot a Pt graph
     output$graph_Pt2 = renderPlot({
         plot_Pt(file = values2$df,
-                #time is determined from exercise 1
+                e = as.numeric(input$e),
+                km = km,
                 time = time2,
                 interval = interval,
                 s_max = s_max,
-                pinf_ratio = pinf_ratio,
-                kmap = km,
-                vapp = k2 * as.numeric(input$e))
+                pinf_ratio = pinf_ratio)
     })
     
+    #create a table from data frame
     output$table2 = renderTable({
         if(length(which(values2$df$substrates >=0)) < 5 && length(which(values2$df$substrates >=0)) > 0){
             values2$df[1: length(which(values2$df$substrates >=0)), c("times", "substrates", "slopes")]
@@ -268,9 +273,10 @@ server = function(input, output, session) {
     #     includeHTML("Captions/instruction_ex3.html")
     # })
     
+    #when users push the add button, this checks if the value is already in the data frame or not and if not it adds the value and other related valeus calculated using the concentration
+    #data frame can store up to 10 data
     newEntry3 = observeEvent(input$add_s3, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
-        #you may want to add "count >= 5" to the following condition which restrict student from skipping ex2
         if(!(input$s3 %in% values2$df$substrates) && count < 10){
             file = lambertPt(s = input$s3, e = as.numeric(input$e), time = time2, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd)
             values2$df$substrates[(count + 1)] = input$s3
@@ -282,6 +288,7 @@ server = function(input, output, session) {
         } 
     })
     
+    #reset an existing data in the data franme which is created by the exercise3 when the reset button is pushed
     reset3 = observeEvent(input$reset3, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         if(count > 5){
@@ -289,14 +296,16 @@ server = function(input, output, session) {
         }
     })
     
+    #plot MM graph
     output$graph_MM3 = renderPlot({
         plot_MM(file = values2$df,
+                e = as.numeric(input$e),
+                km = km,
                 s_max = s_max,
-                pinf_ratio = pinf_ratio,
-                kmapp = km,
-                vapp = k2 * as.numeric(input$e))
+                pinf_ratio = pinf_ratio)
     })
     
+    #create a table 
     output$table3 = renderTable({
         if(length(which(values2$df$substrates >=0)) < 10 && length(which(values2$df$substrates >=0)) > 0){
             values2$df[1: length(which(values2$df$substrates >=0)), c("times", "substrates", "slopes")]
@@ -316,6 +325,7 @@ server = function(input, output, session) {
         paste("Enzyme concentration from Ex1:", "<b>", input$e, " μM", "</b>")
     })
     
+    #calculate error of users' prediction from plots and display the value
     output$error4 = renderText({
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         theo = as.numeric(input$vmax4) * as.numeric(values2$df$substrates[1:count])/(as.numeric(input$km4) + as.numeric(values2$df$substrates[1:count]))
@@ -324,16 +334,17 @@ server = function(input, output, session) {
         paste("<b>Error from plots: ", error, "</b>")
     })
     
-    output$instruction_4 = renderUI({
-        includeHTML("Captions/instruction_ex4.html")
-    })
+    # output$instruction_4 = renderUI({
+    #     includeHTML("Captions/instruction_ex4.html")
+    # })
     
+    #plot MM graph with users' prediction, calculated values, and theoretical values
     output$graph_MM4 = renderPlot({
         plot_MM(file = values2$df,
+                e = as.numeric(input$e),
+                km = km,
                 s_max = s_max,
                 pinf_ratio = pinf_ratio,
-                kmapp = km,
-                vapp = k2 * as.numeric(input$e),
                 km_pre = input$km4,
                 vmax_pre = input$vmax4,
                 display_theoretical_values = input$theory4,
@@ -341,6 +352,7 @@ server = function(input, output, session) {
                 display_fit_values = TRUE)
     })
     
+    #create a table
     output$table4 = renderTable({
         if(length(which(values2$df$substrates >=0)) < 10 && length(which(values2$df$substrates >=0)) > 0){
             values2$df[1: length(which(values2$df$substrates >=0)), c("times", "substrates", "slopes")]

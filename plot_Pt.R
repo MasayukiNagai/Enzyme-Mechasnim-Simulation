@@ -1,17 +1,47 @@
 source("change_color.R")
-plot_Pt = function(file,
-                   time = 1000, s_max = 10, interval = 1, pinf_ratio = 0.9818, kmapp = 1, vapp = 5000 * 10^(-6),
+plot_Pt = function(file, e = 1, i = 1,
+                   k1 = 1000, k_1 = 950, k2 = 50, km = NULL, ki1 = 0.20, ki2 = 0.15,
+                   time = 1000, s_max = 10, interval = 1, pinf_ratio = 0.9818,
+                   game = c("Normal", "Competitive", "Uncompetitive", "Mixed"),
                    display_theoretical_values = FALSE){
+
+  #set km and vmax
+  if(is.null(km)){
+    km = (k_1 + k2)/ k1
+  }
+  v_max = k2 * e
+  
+  game = match.arg(game)
+  #set kmapp and vmapp based on the enzyme kinetics
+  if(game == "Competitive"){
+    kmapp = km * (1 + i/ki1)
+    vapp = v_max * 1
+  }
+  else if(game == "Uncompetitive"){
+    kmapp = km/(1 + i/ki2)
+    vapp = v_max/(1 + i/ki2)
+  }
+  else if(game == "Mixed"){
+    kmapp = km * (1 + i/ki1) / (1 + i/ki2)
+    vapp = v_max/(1 + i/ki2) 
+  }
+  else{
+    kmapp = km
+    vapp = v_max
+  }
   
   count = length(file$substrates[!is.na(file$substrates)])
   length = as.numeric(formatC((time/interval + 1), format = "d"))
   t = seq(0, time, by = interval)
+  #the max concentration of product
   pinf = pinf_ratio * s_max
+  #the max concentration of product within time which users choose
   pt_max = pinf - kmapp * lambertW({(pinf/kmapp) * exp((pinf - vapp * time)/kmapp)})
   ymax = 1.1 * s_max
   
   #checking if the first trial is done or not
   if(count == 0){
+    #only plot a graph without any lines
     plot(x = -100, y = -100, type = "p",
          xlim = c(0, time), ylim = c(0, ymax), xlab = "", ylab = "")
     mtext("time (s)", side = 1, line = 3, cex = 1.5)
@@ -31,6 +61,7 @@ plot_Pt = function(file,
     }
     matlines(x = t, y = t(file[1 : count, 4 : (3 + length)]), type = "l", lty = 1, lwd = 2, col = "black")
     
+    #display multiple slopes
     xval = matrix(data = c(0, time), ncol = 1)
     yval1 = as.numeric(file$intercepts[1:count]) + as.numeric(file$slopes[1:count]) * 0
     yval2 = as.numeric(file$intercepts[1:count]) + as.numeric(file$slopes[1:count]) * time

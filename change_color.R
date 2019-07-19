@@ -1,5 +1,6 @@
 change_color = function(i){
 
+  #make a color gradation according to a value
   if(i >= 0 & i < 1){
     r = (i - 1)^4 * 225 / 255
     g = (1 - i) * 245 / 255

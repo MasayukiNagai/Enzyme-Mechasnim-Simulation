@@ -2,14 +2,15 @@ lambertPt = function(s = 1, e = 1, i = 0.30,
                      k1 = 1000, k_1 = 950, k2 = 50, km = NULL, ki1 = 0.20, ki2 = 0.15,
                      s_max = 10, pinf_ratio = 0.9818, time = 20, interval = 1, sd = 0,
                      game = c("Normal", "Competitive", "Uncompetitive", "Mixed")){
-  
-  game = match.arg(game)
-  t = seq(0, time, by = interval)
+
+  #set km and vmax
   if(is.null(km)){
     km = (k_1 + k2)/ k1
   }
   v_max = k2 * e
   
+  game = match.arg(game)
+  #set kmapp and vmapp based on the enzyme kinetics
   if(game == "Competitive"){
     kmapp = km * (1 + i/ki1)
     vapp = v_max * 1
@@ -27,13 +28,20 @@ lambertPt = function(s = 1, e = 1, i = 0.30,
     vapp = v_max
   }
   
+  t = seq(0, time, by = interval)
+  #the max concentration of product
   pinf = pinf_ratio * s
+  
+  #product concentration as a funtion of time
   pt = pinf - kmapp * lambertW({(pinf/kmapp) * exp((pinf - vapp * t)/kmapp)})
-  pt_error = pinf - kmapp * lambertW({(pinf/kmapp) * exp((pinf - vapp * t)/kmapp)}) + rnorm(t, mean = 0, sd = sd)
-  v_init = lm(pt[0:15]~t[0:15])
+  #linear regression of the first few points
+  v_init = lm(pt[0:2]~t[0:2])
   slopes = as.numeric(v_init$coefficient[2])
   intercepts = as.numeric(v_init$coefficient[1])
-  v_init_error = lm(pt_error[0:15]~t[0:15])
+  
+  #product concentration as a funtion of time with error
+  pt_error = pinf - kmapp * lambertW({(pinf/kmapp) * exp((pinf - vapp * t)/kmapp)}) + rnorm(t, mean = 0, sd = sd)
+  v_init_error = lm(pt_error[0:10]~t[0:10])
   slopes_error = as.numeric(v_init_error$coefficient[2])
   intercepts_error = as.numeric(v_init_error$coefficient[1])
 
