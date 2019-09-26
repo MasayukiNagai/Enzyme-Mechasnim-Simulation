@@ -19,6 +19,8 @@ sd = 0.01
 s_max = 10
 #the number of points you get for each data
 interval = 0.1
+#substrate concentration for exercise 1 (μM) (from 1 to 10)
+s1 = 1
 
 server = function(input, output, session) {
 
@@ -39,10 +41,11 @@ server = function(input, output, session) {
     newEntry0 = observeEvent(input$add_s0, {
         count = length(values0$df$substrates[!is.na(values0$df$substrates)])
         if(!(input$s0 %in% values0$df$substrates) && count < 10){
+            length0 = as.numeric(formatC((input$time0/interval + 1), format = "d"))
             file = lambertPt(s = input$s0, e = as.numeric(input$e0), time = input$time0, k2 = k2, km = km, s_max = s_max,  pinf_ratio = pinf_ratio, interval = interval, sd = sd)
             values0$df$substrates[(count + 1)] = input$s0
-            values0$df[(count + 1), (4 + interval) : (3 + interval + interval)]= file$pt
-            values0$df[(count + 1), 4 : (3 + interval)] = file$pt_error
+            values0$df[(count + 1), (4 + length0) : (3 + length0 + length0)]= file$pt
+            values0$df[(count + 1), 4 : (3 + length0)] = file$pt_error
             values0$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
             values0$df$intercepts[(count + 1)] = file$intercepts_error
         } 
@@ -77,22 +80,22 @@ server = function(input, output, session) {
     #plot Pt graph
     output$graph_Pt0 = renderPlot({
         plot_Pt(file = values0$df,
+                e = as.numeric(input$e0),
                 time = input$time0,
                 s_max = s_max,
                 interval = interval,
                 pinf_ratio = pinf_ratio,
-                kmap = km,
-                vapp = k2 * as.numeric(input$e0),
+                km = km,
                 display_theoretical_values = input$theory0)
     })
     
     #plot MM graph
     output$graph_MM0 = renderPlot({
         plot_MM(file = values0$df,
+                e = as.numeric(input$e0),
                 s_max = s_max,
                 pinf_ratio = pinf_ratio,
-                kmapp = km,
-                vapp = k2 * as.numeric(input$e0),
+                km = km,
                 km_pre = input$km0,
                 vmax_pre = input$vmax0,
                 display_theoretical_values = input$theory0,
@@ -122,22 +125,22 @@ server = function(input, output, session) {
     })
     
 # Exercise 1
-
-    # output$instruction_1 = renderUI({
-    #     includeHTML("Captions/instruction_ex1.html")
-    # })
+    output$substrate1 = renderText({
+        paste("Substrate Concentration is: ", "<b>", "x μM", "<b>")
+    })
 
     #calculate one sequence of pt 
     calcPt = reactive({
-        out = lambertPt(s = as.numeric(input$s1),
-                        e = as.numeric(input$e1),
+        out = lambertPt(s = s1,
+                        e = as.numeric(input$e1) * s1,
                         k2 = k2,
                         km = km,
-                        s_max = s_max,
+                        s_max = s1,
                         pinf_ratio = pinf_ratio,
-                        time = 300,
-                        interval = interval,
-                        sd = sd)
+                        time = input$time1,
+                        interval = input$interval1,
+                        sd = sd,
+                        timechecker = FALSE)
         out
     })
 
@@ -146,56 +149,6 @@ server = function(input, output, session) {
         simple_plot_Pt(file = calcPt())
     })
     
-# # Exercise 1 fixed
-#     
-#     output$instruction_1 = renderUI({
-#         includeHTML("Captions/instruction_ex1.html")
-#     })
-#     
-#     times1f = rep(NA, 20)
-#     substrates1f = rep(NA, 20)
-#     pt1f = matrix(nrow = 20, ncol = interval)
-#     pt_error1f = matrix(nrow = 20, ncol = interval)
-#     slopes1f = rep(NA, 20)
-#     intercepts1f = rep(NA, 20)
-#     values1f = reactiveValues(df = data.frame("substrates" = substrates1f, "slopes" = slopes1f, "intercepts" = intercepts1f, "pt_error" = pt_error1f, "pt" = pt1f, "times" = times1f))
-#     newEntry1f = observeEvent(input$add_s1f, {
-#         count = length(values1f$df$substrates[!is.na(values1f$df$substrates)])
-#         if(!(input$s1f %in% values1f$df$substrates) && count < 5){
-#             file = lambertPt(s = input$s1f, e = as.numeric(input$e1f), time = input$time1f, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd)
-#             values1f$df$substrates[(count + 1)] = input$s2
-#             values1f$df[(count + 1), (4 + interval) : (3 + interval + interval)]= file$pt
-#             values1f$df[(count + 1), 4 : (3 + interval)] = file$pt_error
-#             values1f$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
-#             values1f$df$intercepts[(count + 1)] = file$intercepts_error
-#             values1f$df$times[(count + 1)] = formatC(count + 1, format = "d")
-#         } 
-#     })
-#     
-#     reset1f = observeEvent(input$reset1f, {
-#         count = length(values1f$df$substrates[!is.na(values1f$df$substrates)])
-#         values1f$df[1:count, ] = NA
-#     })
-#     
-#     #calculate one sequence of pt 
-#     calcPt = reactive({
-#         out = lambertPt(s = as.numeric(input$s1),
-#                         e = as.numeric(input$e1),
-#                         k2 = k2,
-#                         km = km,
-#                         s_max = s_max,
-#                         pinf_ratio = pinf_ratio,
-#                         time = 300,
-#                         interval = interval,
-#                         sd = sd)
-#         out
-#     })
-#     
-#     #plot only one Pt graph
-#     output$graph_Pt1 = renderPlot({
-#         simple_plot_Pt(file = calcPt())
-#     })
-
     
 # Exercise 2
     output$enzyme2 = renderText({

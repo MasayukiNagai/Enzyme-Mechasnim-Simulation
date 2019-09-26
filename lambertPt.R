@@ -1,7 +1,8 @@
 lambertPt = function(s = 1, e = 1, i = 0.30,
                      k1 = 1000, k_1 = 950, k2 = 50, km = NULL, ki1 = 0.20, ki2 = 0.15,
                      s_max = 10, pinf_ratio = 0.9818, time = 20, interval = 1, sd = 0,
-                     game = c("Normal", "Competitive", "Uncompetitive", "Mixed")){
+                     game = c("Normal", "Competitive", "Uncompetitive", "Mixed"),
+                     timechecker = TRUE){
 
   #set km and vmax
   if(is.null(km)){
@@ -45,9 +46,12 @@ lambertPt = function(s = 1, e = 1, i = 0.30,
   slopes_error = as.numeric(v_init_error$coefficient[2])
   intercepts_error = as.numeric(v_init_error$coefficient[1])
 
-  pinf_max = pinf_ratio * s_max
-  pt_max = pinf_max - kmapp * lambertW({(pinf_max/kmapp) * exp((pinf_max - vapp * t)/kmapp)})
-  time = min(min(which(pt_max > (0.95 * pinf_max)), time) * 1.5, time)
+  if(timechecker){
+    pinf_max = pinf_ratio * s_max
+    pt_max = pinf_max - kmapp * lambertW({(pinf_max/kmapp) * exp((pinf_max - vapp * t)/kmapp)})
+    time = min(min(which(pt_max > (0.95 * pinf_max)), time) * 1.5, time)
+  }
+
   
   out = list("pt" = pt,
              "pt_error" = pt_error,
