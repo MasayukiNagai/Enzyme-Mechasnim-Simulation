@@ -30,7 +30,12 @@ plot_Pt = function(file, e = 1, i = 1,
     vapp = v_max
   }
   
-  count = length(file$substrates[!is.na(file$substrates)])
+  if("enzymes" %in% colnames(file)){
+    count = length(file$enzymes[!is.na(file$enzymes)])
+  }
+  else{
+    count = length(file$substrates[!is.na(file$substrates)])
+  }
   length = as.numeric(formatC((time/interval + 1), format = "d"))
   t = seq(0, time, by = interval)
   #the max concentration of product
@@ -66,7 +71,12 @@ plot_Pt = function(file, e = 1, i = 1,
     yval1 = as.numeric(file$intercepts[1:count]) + as.numeric(file$slopes[1:count]) * 0
     yval2 = as.numeric(file$intercepts[1:count]) + as.numeric(file$slopes[1:count]) * time
     yvalues = rbind(yval1, yval2)
-    color = unlist(lapply(as.numeric(file$slopes[1:count])/vapp, change_color))
+    if("enzymes" %in% colnames(file)){
+      color = "blue"
+    }
+    else{
+      color = unlist(lapply(as.numeric(file$slopes[1:count])/vapp, change_color))
+    }
     matlines(x = xval, y = yvalues, type = "l", lty = 2, lwd = 3, col = color)
   }
 }

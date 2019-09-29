@@ -21,6 +21,8 @@ s_max = 10
 interval = 0.1
 #substrate concentration for exercise 1 (μM) (from 1 to 10)
 s1 = 1
+#the max time of exercise 1
+time1 = 500
 
 server = function(input, output, session) {
 
@@ -29,124 +31,45 @@ server = function(input, output, session) {
         includeHTML("Captions/about.html")
     })
     
-#Overview
-    #create vectors/matrices to compose a data frame which stores data entered by users
-    substrates0 = rep(NA, 20)
-    pt0 = matrix(nrow = 20, ncol = interval)
-    pt_error0 = matrix(nrow = 20, ncol = interval)
-    slopes0 = rep(NA, 20)
-    intercepts0 = rep(NA, 20)
-    values0 = reactiveValues(df = data.frame("substrates" = substrates0, "slopes" = slopes0, "intercepts" = intercepts0, "pt_error" = pt_error0, "pt" = pt0))
+# Exercise 1
+    length1 = as.numeric(formatC((time1/interval + 1), format = "d"))
+    enzymes1 = rep(NA, 10)
+    pt1 = matrix(nrow = 10, ncol = length1)
+    pt_error1 = matrix(nrow = 10, ncol = length1)
+    slopes1 = rep(NA, 10)
+    intercepts1 = rep(NA, 10)
+    values1 = reactiveValues(df = data.frame("enzymes" = enzymes1, "slopes" = slopes1, "intercepts" = intercepts1, "pt_error" = pt_error1, "pt" = pt1))
     #when users put add button, this checks if the value is already in the data frame or not and if not it adds the value and other related valeus calculated using the concentration
-    newEntry0 = observeEvent(input$add_s0, {
-        count = length(values0$df$substrates[!is.na(values0$df$substrates)])
-        if(!(input$s0 %in% values0$df$substrates) && count < 10){
-            length0 = as.numeric(formatC((input$time0/interval + 1), format = "d"))
-            file = lambertPt(s = input$s0, e = as.numeric(input$e0), time = input$time0, k2 = k2, km = km, s_max = s_max,  pinf_ratio = pinf_ratio, interval = interval, sd = sd)
-            values0$df$substrates[(count + 1)] = input$s0
-            values0$df[(count + 1), (4 + length0) : (3 + length0 + length0)]= file$pt
-            values0$df[(count + 1), 4 : (3 + length0)] = file$pt_error
-            values0$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
-            values0$df$intercepts[(count + 1)] = file$intercepts_error
+    newEntry1 = observeEvent(input$add_s1, {
+        count = length(values1$df$enzymes[!is.na(values1$df$enzymes)])
+        if(!(input$e1 %in% values1$df$enzymes) && count < 10){
+            file = lambertPt(s = s1, e = as.numeric(input$e1), time = time1, k2 = k2, km = km, s_max = s1,  pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
+            values1$df$enzymes[(count + 1)] = s1
+            values1$df[(count + 1), (4 + length1) : (3 + length1 + length1)]= file$pt
+            values1$df[(count + 1), 4 : (3 + length1)] = file$pt_error
+            values1$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
+            values1$df$intercepts[(count + 1)] = file$intercepts_error
         } 
     })
     
-    #reset an existing data frame by pushing a button
-    reset0 = observeEvent(input$reset0, {
-        count = length(values0$df$substrates[!is.na(values0$df$substrates)])
-        values0$df[1:count, ] = NA
+    #reset an existing data frame when the reset button is pushed
+    reset1 = observeEvent(input$reset1, {
+        count = length(values1$df$enzymes[!is.na(values1$df$enzymes)])
+        values1$df[1:count, ] = NA
     })
     
-    observe({
-        concentration = as.numeric(input$e0)
-        if(concentration == 1 * 10^(-1)){
-            fixed_time = 10
-        }
-        else if(concentration == 2 * 10^(-2)){
-            fixed_time = 20
-        }
-        else if(concentration == 1 * 10^(-4)){
-            fixed_time = 4000
-        }
-        else if(concentration == 1 * 10^(-5)){
-            fixed_time = 10000
-        }
-        else{
-            fixed_time = 100
-        }
-        updateSliderInput(session, "time0", value = fixed_time)
-    })
-    
-    #plot Pt graph
-    output$graph_Pt0 = renderPlot({
-        plot_Pt(file = values0$df,
-                e = as.numeric(input$e0),
-                time = input$time0,
-                s_max = s_max,
-                interval = interval,
-                pinf_ratio = pinf_ratio,
-                km = km,
-                display_theoretical_values = input$theory0)
-    })
-    
-    #plot MM graph
-    output$graph_MM0 = renderPlot({
-        plot_MM(file = values0$df,
-                e = as.numeric(input$e0),
-                s_max = s_max,
-                pinf_ratio = pinf_ratio,
-                km = km,
-                km_pre = input$km0,
-                vmax_pre = input$vmax0,
-                display_theoretical_values = input$theory0,
-                display_fit_values = input$fit0)
-    })
-    
-    #calculate error (this uses Km not Kapp so if you appy inhibitor values, this needs to be fixed as well)
-    output$error0 = renderText({
-        vmax0 = k2 * as.numeric(input$e0)
-        count = length(values0$df$substrates[!is.na(values0$df$substrates)])
-        theo = vmax0 * as.numeric(values0$df$substrates[1:count])/(km + as.numeric(values0$df$substrates[1:count]))
-        exp = input$vmax0 * as.numeric(values0$df$substrates[1:count])/(input$km0 + as.numeric(values0$df$substrates[1:count]))
-        error = round(sum(sqrt((theo - exp)^2))/as.numeric(input$e0), 2)
-        paste("<b>Error: ", error, "</b>")
-    })
-    
-    #display theoretical values
-    output$theory_values0 = renderText({
-        paste("Theorectical values")
-        vmax0 = k2 * as.numeric(input$e0)
-        if(input$theory0){
-            paste("Km:", km, ",", "Vmax:", vmax0)
-        }
-        else{
-            paste("Km:", " ", ",",  "Vmax:", " ")
-        }
-    })
-    
-# Exercise 1
     output$substrate1 = renderText({
         paste("Substrate Concentration is: ", "<b>", "x μM", "<b>")
     })
-
-    #calculate one sequence of pt 
-    calcPt = reactive({
-        out = lambertPt(s = s1,
-                        e = as.numeric(input$e1) * s1,
-                        k2 = k2,
-                        km = km,
-                        s_max = s1,
-                        pinf_ratio = pinf_ratio,
-                        time = input$time1,
-                        interval = input$interval1,
-                        sd = sd,
-                        timechecker = FALSE)
-        out
-    })
-
-    #plot only one Pt graph
+    
     output$graph_Pt1 = renderPlot({
-        simple_plot_Pt(file = calcPt())
+        plot_Pt(file = values1$df,
+                e = as.numeric(input$e1),
+                km = km,
+                time = input$time1,
+                interval = interval,
+                s_max = s1,
+                pinf_ratio = pinf_ratio)
     })
     
     
