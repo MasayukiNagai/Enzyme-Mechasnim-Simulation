@@ -17,13 +17,11 @@ ui<-fluidPage(
                                            wellPanel(
                                              htmlOutput("substrate1"),
                                              HTML("<br>"),
-                                             selectInput("e1", "Enzyme concentration (μM)",
-                                                         choices = list("0.0001x μM" = 0.0001, "0.001x μM" = 0.001, "0.01x μM" = 0.01, "0.1x μM" = 10),
-                                                         selected = NULL),
+                                             checkboxGroupInput("e1", "Enzyme concentration (μM)", 
+                                                                choices = c("0.1x μM" = 0.1, "0.01x μM" = 0.01, "0.001x μM" = 0.001, "0.0001x μM" = 0.0001),
+                                                                selected = c(0.1, 0.01, 0.001, 0.0001)),
                                              sliderInput("time1", "Time (s)",
-                                                         min = 1, max = 500, value = 300),
-                                             actionButton("add_s1", "Do an experiment"),
-                                             actionButton("reset1", "Reset Ex1")
+                                                         min = 1, max = 500, value = 300)
                                            )),
                                     column(9,
                                            plotOutput("graph_Pt1", height = "500px")
@@ -33,8 +31,8 @@ ui<-fluidPage(
                                     column(3,
                                            wellPanel(
                                              selectInput("e", "Determine enzyme concentration (M)",
-                                                         choices = list("0.0001x μM" = 0.0001, "0.001x μM" = 0.001, "0.01x μM" = 0.01, "0.1x μM" = 10),
-                                                         selected = 0.0001),
+                                                         choices = list("0.1x μM" = 10, "0.01x μM" = 0.01, "0.001x μM" = 0.001, "0.0001x μM" = 0.0001),
+                                                         selected = 0.01),
                                              sliderInput("time", "Determine how long you conduct the experiment (s)",
                                                          min = 1, max = 500, value = 120)
                                            )

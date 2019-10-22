@@ -6,14 +6,15 @@ library(splines)
 source("plot_Pt.R")
 source("plot_MM.R")
 source("lambertPt.R")
-source("simple_plot_Pt.R")
+source("simpleplot_Pt.R")
+
 
 #change the values of variables 
 km = 1
 k2 = 50
 #the max formation rate of product
 pinf_ratio = 0.9818
-#degree of deviation
+#degree of deviation 
 sd = 0.01
 #the maximum value of substrates (slider)
 s_max = 10
@@ -24,6 +25,14 @@ s1 = 1
 #the max time of exercise 1
 time1 = 500
 
+enzymes1 = c(0.1, 0.01, 0.001, 0.0001)
+file_1 = lambertPt(s = s1, e = enzymes1[1], time = time1, k2 = k2, km = km, s_max = s1, pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
+file_2 = lambertPt(s = s1, e = enzymes1[2], time = time1, k2 = k2, km = km, s_max = s1, pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
+file_3 = lambertPt(s = s1, e = enzymes1[3], time = time1, k2 = k2, km = km, s_max = s1, pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
+file_4 = lambertPt(s = s1, e = enzymes1[4], time = time1, k2 = k2, km = km, s_max = s1, pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
+df_pt_error = data.frame("pt_error_1" = file_1$pt_error, "pt_error_2" = file_2$pt_error, "pt_error_3" = file_3$pt_error, "pt_error_4" = file_4$pt_error)
+
+
 server = function(input, output, session) {
 
 #About
@@ -32,44 +41,22 @@ server = function(input, output, session) {
     })
     
 # Exercise 1
-    length1 = as.numeric(formatC((time1/interval + 1), format = "d"))
-    enzymes1 = rep(NA, 10)
-    pt1 = matrix(nrow = 10, ncol = length1)
-    pt_error1 = matrix(nrow = 10, ncol = length1)
-    slopes1 = rep(NA, 10)
-    intercepts1 = rep(NA, 10)
-    values1 = reactiveValues(df = data.frame("enzymes" = enzymes1, "slopes" = slopes1, "intercepts" = intercepts1, "pt_error" = pt_error1, "pt" = pt1))
-    #when users put add button, this checks if the value is already in the data frame or not and if not it adds the value and other related valeus calculated using the concentration
-    newEntry1 = observeEvent(input$add_s1, {
-        count = length(values1$df$enzymes[!is.na(values1$df$enzymes)])
-        if(!(input$e1 %in% values1$df$enzymes) && count < 10){
-            file = lambertPt(s = s1, e = as.numeric(input$e1), time = time1, k2 = k2, km = km, s_max = s1,  pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
-            values1$df$enzymes[(count + 1)] = s1
-            values1$df[(count + 1), (4 + length1) : (3 + length1 + length1)]= file$pt
-            values1$df[(count + 1), 4 : (3 + length1)] = file$pt_error
-            values1$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
-            values1$df$intercepts[(count + 1)] = file$intercepts_error
-        } 
-    })
-    
-    #reset an existing data frame when the reset button is pushed
-    reset1 = observeEvent(input$reset1, {
-        count = length(values1$df$enzymes[!is.na(values1$df$enzymes)])
-        values1$df[1:count, ] = NA
-    })
     
     output$substrate1 = renderText({
         paste("Substrate Concentration is: ", "<b>", "x μM", "<b>")
     })
     
     output$graph_Pt1 = renderPlot({
-        plot_Pt(file = values1$df,
-                e = as.numeric(input$e1),
-                km = km,
-                time = input$time1,
-                interval = interval,
-                s_max = s1,
-                pinf_ratio = pinf_ratio)
+        simpleplot_Pt(enzymes = enzymes1,
+                      df_pt = df_pt_error,
+                      time_max = time1,
+                      time = input$time1,
+                      interval = interval,
+                      s_max = s1,
+                      a_plot = 0.1 %in% input$e1,
+                      b_plot = 0.01 %in% input$e1,
+                      c_plot = 0.001 %in% input$e1,
+                      d_plot = 0.0001 %in% input$e1)
     })
     
     
@@ -223,7 +210,6 @@ server = function(input, output, session) {
                 pinf_ratio = pinf_ratio,
                 km_pre = input$km4,
                 vmax_pre = input$vmax4,
-                display_theoretical_values = input$theory4,
                 display_calculated_values = input$calculated4,
                 display_fit_values = TRUE)
     })
