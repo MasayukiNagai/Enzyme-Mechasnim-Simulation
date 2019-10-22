@@ -2,8 +2,8 @@ source("change_color.R")
 plot_Pt = function(file, e = 1, i = 1,
                    k1 = 1000, k_1 = 950, k2 = 50, km = NULL, ki1 = 0.20, ki2 = 0.15,
                    time = 1000, s_max = 10, interval = 1, pinf_ratio = 0.9818,
-                   game = c("Normal", "Competitive", "Uncompetitive", "Mixed"),
-                   display_theoretical_values = FALSE){
+                   mechanism = c("Normal", "Competitive", "Uncompetitive", "Mixed"),
+                   display_slopes = TRUE, display_theoretical_values = FALSE){
 
   #set km and vmax
   if(is.null(km)){
@@ -11,17 +11,17 @@ plot_Pt = function(file, e = 1, i = 1,
   }
   v_max = k2 * e
   
-  game = match.arg(game)
+  mechanism = match.arg(mechanism)
   #set kmapp and vmapp based on the enzyme kinetics
-  if(game == "Competitive"){
+  if(mechanism == "Competitive"){
     kmapp = km * (1 + i/ki1)
     vapp = v_max * 1
   }
-  else if(game == "Uncompetitive"){
+  else if(mechanism == "Uncompetitive"){
     kmapp = km/(1 + i/ki2)
     vapp = v_max/(1 + i/ki2)
   }
-  else if(game == "Mixed"){
+  else if(mechanism == "Mixed"){
     kmapp = km * (1 + i/ki1) / (1 + i/ki2)
     vapp = v_max/(1 + i/ki2) 
   }
@@ -30,12 +30,8 @@ plot_Pt = function(file, e = 1, i = 1,
     vapp = v_max
   }
   
-  if("enzymes" %in% colnames(file)){
-    count = length(file$enzymes[!is.na(file$enzymes)])
-  }
-  else{
-    count = length(file$substrates[!is.na(file$substrates)])
-  }
+
+  count = length(file$substrates[!is.na(file$substrates)])
   length = as.numeric(formatC((time/interval + 1), format = "d"))
   t = seq(0, time, by = interval)
   #the max concentration of product
@@ -66,17 +62,15 @@ plot_Pt = function(file, e = 1, i = 1,
     }
     matlines(x = t, y = t(file[1 : count, 4 : (3 + length)]), type = "l", lty = 1, lwd = 2, col = "black")
     
-    #display multiple slopes
-    xval = matrix(data = c(0, time), ncol = 1)
-    yval1 = as.numeric(file$intercepts[1:count]) + as.numeric(file$slopes[1:count]) * 0
-    yval2 = as.numeric(file$intercepts[1:count]) + as.numeric(file$slopes[1:count]) * time
-    yvalues = rbind(yval1, yval2)
-    if("enzymes" %in% colnames(file)){
-      color = "blue"
-    }
-    else{
+    if(display_slopes){
+      #display multiple slopes
+      xval = matrix(data = c(0, time), ncol = 1)
+      yval1 = as.numeric(file$intercepts[1:count]) + as.numeric(file$slopes[1:count]) * 0
+      yval2 = as.numeric(file$intercepts[1:count]) + as.numeric(file$slopes[1:count]) * time
+      yvalues = rbind(yval1, yval2)
       color = unlist(lapply(as.numeric(file$slopes[1:count])/vapp, change_color))
+      matlines(x = xval, y = yvalues, type = "l", lty = 2, lwd = 3, col = color)
     }
-    matlines(x = xval, y = yvalues, type = "l", lty = 2, lwd = 3, col = color)
   }
+
 }

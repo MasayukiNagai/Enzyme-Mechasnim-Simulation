@@ -1,5 +1,5 @@
 source("change_color.R")
-simple_plot_Pt = function(file,
+single_plot_Pt = function(file,
                           display_theoretical_values = FALSE){
   
   t = file$t
