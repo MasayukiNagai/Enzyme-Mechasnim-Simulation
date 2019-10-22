@@ -1,7 +1,7 @@
 source("change_color.R")
 plot_Pt = function(file, e = 1, i = 1,
                    k1 = 1000, k_1 = 950, k2 = 50, km = NULL, ki1 = 0.20, ki2 = 0.15,
-                   time = 1000, s_max = 10, interval = 1, pinf_ratio = 0.9818,
+                   time_max = 500, time = 150, s_max = 10, interval = 1, pinf_ratio = 0.9818,
                    mechanism = c("Normal", "Competitive", "Uncompetitive", "Mixed"),
                    display_slopes = TRUE, display_theoretical_values = FALSE){
 
@@ -32,12 +32,12 @@ plot_Pt = function(file, e = 1, i = 1,
   
 
   count = length(file$substrates[!is.na(file$substrates)])
-  length = as.numeric(formatC((time/interval + 1), format = "d"))
-  t = seq(0, time, by = interval)
+  length = as.numeric(formatC((time_max/interval + 1), format = "d"))
+  t = seq(0, time_max, by = interval)
   #the max concentration of product
   pinf = pinf_ratio * s_max
   #the max concentration of product within time which users choose
-  pt_max = pinf - kmapp * lambertW({(pinf/kmapp) * exp((pinf - vapp * time)/kmapp)})
+  pt_max = pinf - kmapp * lambertW({(pinf/kmapp) * exp((pinf - vapp * time_max)/kmapp)})
   ymax = 1.1 * s_max
   
   #checking if the first trial is done or not
@@ -64,9 +64,9 @@ plot_Pt = function(file, e = 1, i = 1,
     
     if(display_slopes){
       #display multiple slopes
-      xval = matrix(data = c(0, time), ncol = 1)
+      xval = matrix(data = c(0, time_max), ncol = 1)
       yval1 = as.numeric(file$intercepts[1:count]) + as.numeric(file$slopes[1:count]) * 0
-      yval2 = as.numeric(file$intercepts[1:count]) + as.numeric(file$slopes[1:count]) * time
+      yval2 = as.numeric(file$intercepts[1:count]) + as.numeric(file$slopes[1:count]) * time_max
       yvalues = rbind(yval1, yval2)
       color = unlist(lapply(as.numeric(file$slopes[1:count])/vapp, change_color))
       matlines(x = xval, y = yvalues, type = "l", lty = 2, lwd = 3, col = color)

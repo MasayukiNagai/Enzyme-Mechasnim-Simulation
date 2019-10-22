@@ -23,13 +23,14 @@ interval = 0.1
 #substrate concentration for exercise 1 (μM) (from 1 to 10)
 s1 = 1
 #the max time of exercise 1
-time1 = 500
+time_max = 500
 
 enzymes1 = c(0.1, 0.01, 0.001, 0.0001)
-file_1 = lambertPt(s = s1, e = enzymes1[1], time = time1, k2 = k2, km = km, s_max = s1, pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
-file_2 = lambertPt(s = s1, e = enzymes1[2], time = time1, k2 = k2, km = km, s_max = s1, pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
-file_3 = lambertPt(s = s1, e = enzymes1[3], time = time1, k2 = k2, km = km, s_max = s1, pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
-file_4 = lambertPt(s = s1, e = enzymes1[4], time = time1, k2 = k2, km = km, s_max = s1, pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
+#why sd = sd/5??
+file_1 = lambertPt(s = s1, e = enzymes1[1], time = time_max, k2 = k2, km = km, s_max = s1, pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
+file_2 = lambertPt(s = s1, e = enzymes1[2], time = time_max, k2 = k2, km = km, s_max = s1, pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
+file_3 = lambertPt(s = s1, e = enzymes1[3], time = time_max, k2 = k2, km = km, s_max = s1, pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
+file_4 = lambertPt(s = s1, e = enzymes1[4], time = time_max, k2 = k2, km = km, s_max = s1, pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
 df_pt_error = data.frame("pt_error_1" = file_1$pt_error, "pt_error_2" = file_2$pt_error, "pt_error_3" = file_3$pt_error, "pt_error_4" = file_4$pt_error)
 
 
@@ -49,7 +50,7 @@ server = function(input, output, session) {
     output$graph_Pt1 = renderPlot({
         simpleplot_Pt(enzymes = enzymes1,
                       df_pt = df_pt_error,
-                      time_max = time1,
+                      time_max = time_max,
                       time = input$time1,
                       interval = interval,
                       s_max = s1,
@@ -69,9 +70,8 @@ server = function(input, output, session) {
     #     includeHTML("Captions/instruction_ex2.html")
     # })
     
-    #time should be determined by ex1
-    time2 = 15
-    length2 = as.numeric(formatC((time2/interval + 1), format = "d"))
+    
+    length2 = as.numeric(formatC((time_max/interval + 1), format = "d"))
     
     #create vectors/matrices to compose a data frame which stores data entered by users
     times2 = rep(NA, 20)
@@ -81,12 +81,13 @@ server = function(input, output, session) {
     slopes2 = rep(NA, 20)
     intercepts2 = rep(NA, 20)
     values2 = reactiveValues(df = data.frame("substrates" = substrates2, "slopes" = slopes2, "intercepts" = intercepts2, "pt_error" = pt_error2, "pt" = pt2, "times" = times2))
+    
     #when users push the add button, this checks if the value is already in the data frame or not and if not it adds the value and other related valeus calculated using the concentration
     #data frame can store up to 5 data
     newEntry2 = observeEvent(input$add_s2, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         if(!(input$s2 %in% values2$df$substrates) && count < 5){
-            file = lambertPt(s = input$s2, e = as.numeric(input$e), time = time2, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd)
+            file = lambertPt(s = input$s2, e = as.numeric(input$e), time = time_max, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
             values2$df$substrates[(count + 1)] = input$s2
             values2$df[(count + 1), (4 + length2) : (3 + length2 + length2)]= file$pt
             values2$df[(count + 1), 4 : (3 + length2)] = file$pt_error
@@ -107,7 +108,8 @@ server = function(input, output, session) {
         plot_Pt(file = values2$df,
                 e = as.numeric(input$e),
                 km = km,
-                time = time2,
+                time_max = time_max,
+                time = input$time,
                 interval = interval,
                 s_max = s_max,
                 pinf_ratio = pinf_ratio)
@@ -141,7 +143,7 @@ server = function(input, output, session) {
     newEntry3 = observeEvent(input$add_s3, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         if(!(input$s3 %in% values2$df$substrates) && count < 10){
-            file = lambertPt(s = input$s3, e = as.numeric(input$e), time = time2, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd)
+            file = lambertPt(s = input$s3, e = as.numeric(input$e), time = time_max, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd)
             values2$df$substrates[(count + 1)] = input$s3
             values2$df[(count + 1), (4 + length2) : (3 + length2 + length2)]= file$pt
             values2$df[(count + 1), 4 : (3 + length2)] = file$pt_error
