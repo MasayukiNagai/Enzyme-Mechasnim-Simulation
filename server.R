@@ -87,7 +87,7 @@ server = function(input, output, session) {
     newEntry2 = observeEvent(input$add_s2, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         if(!(input$s2 %in% values2$df$substrates) && count < 5){
-            file = lambertPt(s = input$s2, e = as.numeric(input$e), time = time_max, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd/5)
+            file = lambertPt(s = input$s2, e = as.numeric(input$e), time = time_max, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd/10)
             values2$df$substrates[(count + 1)] = input$s2
             values2$df[(count + 1), (4 + length2) : (3 + length2 + length2)]= file$pt
             values2$df[(count + 1), 4 : (3 + length2)] = file$pt_error
@@ -161,6 +161,12 @@ server = function(input, output, session) {
         }
     })
     
+    #reset every data when the enzyme concentration was changed
+    reset = observeEvent(input$e, {
+        count = length(values2$df$substrates[!is.na(values2$df$substrates)])
+        values2$df[1:count, ] = NA
+    })
+    
     #plot MM graph
     output$graph_MM3 = renderPlot({
         plot_MM(file = values2$df,
@@ -188,6 +194,15 @@ server = function(input, output, session) {
     
     output$enzyme4 = renderText({
         paste("Enzyme concentration from Ex1:", "<b>", input$e, " μM", "</b>")
+    })
+    
+    observe({
+        e = as.numeric(input$e)
+        vmax = k2 * e
+        updateSliderInput(session, "vmax4", 
+                          value = 0.6 * k2 * e, max = 2.0 * vmax, step = vmax/100)
+        updateSliderInput(session, "km4",
+                          value = 2)
     })
     
     #calculate error of users' prediction from plots and display the value

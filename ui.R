@@ -19,7 +19,7 @@ ui<-fluidPage(
                                              HTML("<br>"),
                                              checkboxGroupInput("e1", "Enzyme concentration (μM)", 
                                                                 choices = c("0.1x μM" = 0.1, "0.01x μM" = 0.01, "0.001x μM" = 0.001, "0.0001x μM" = 0.0001),
-                                                                selected = c(0.1, 0.01, 0.001, 0.0001)),
+                                                                selected = c(0.001)),
                                              sliderInput("time1", "Time (s)",
                                                          min = 1, max = 500, value = 300)
                                            )),
@@ -32,9 +32,9 @@ ui<-fluidPage(
                                            wellPanel(
                                              selectInput("e", "Determine enzyme concentration (M)",
                                                          choices = list("0.1x μM" = 10, "0.01x μM" = 0.01, "0.001x μM" = 0.001, "0.0001x μM" = 0.0001),
-                                                         selected = 0.01),
+                                                         selected = 0.001),
                                              sliderInput("time", "Determine how long you conduct the experiment (s)",
-                                                         min = 1, max = 500, value = 120)
+                                                         min = 1, max = 500, value = 300)
                                            )
                                     ),
                                     column(9,
