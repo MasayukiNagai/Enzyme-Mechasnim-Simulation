@@ -20,7 +20,7 @@ sd = 0.01
 s_max = 10
 #the number of points you get for each data
 interval = 0.1
-#substrate concentration for exercise 1 (μM) (from 1 to 10)
+#substrate concentration for exercise 1 (μM) (from 1 to 10), which is represented as x
 s1 = 1
 #the max time of exercise 1
 time_max = 500
@@ -87,11 +87,11 @@ server = function(input, output, session) {
     newEntry2 = observeEvent(input$add_s2, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         if(!(input$s2 %in% values2$df$substrates) && count < 5){
-            file = lambertPt(s = input$s2, e = as.numeric(input$e), time = time_max, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd/10)
+            file = lambertPt(s = input$s2, e = as.numeric(input$e), time = time_max, k2 = k2, km = km, s_max = s_max, pinf_ratio = pinf_ratio, interval = interval, sd = sd)
             values2$df$substrates[(count + 1)] = input$s2
             values2$df[(count + 1), (4 + length2) : (3 + length2 + length2)]= file$pt
             values2$df[(count + 1), 4 : (3 + length2)] = file$pt_error
-            values2$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
+            values2$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 2)
             values2$df$intercepts[(count + 1)] = file$intercepts_error
             values2$df$times[(count + 1)] = formatC(count + 1, format = "d")
         } 
@@ -147,7 +147,7 @@ server = function(input, output, session) {
             values2$df$substrates[(count + 1)] = input$s3
             values2$df[(count + 1), (4 + length2) : (3 + length2 + length2)]= file$pt
             values2$df[(count + 1), 4 : (3 + length2)] = file$pt_error
-            values2$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 3)
+            values2$df$slopes[(count + 1)] = formatC(file$slopes_error, format = "e", digits = 2)
             values2$df$intercepts[(count + 1)] = file$intercepts_error
             values2$df$times[(count + 1)] = formatC(count + 1, format = "d")
         } 
@@ -162,7 +162,13 @@ server = function(input, output, session) {
     })
     
     #reset every data when the enzyme concentration was changed
-    reset = observeEvent(input$e, {
+    reset_enzyme = observeEvent(input$e, {
+        count = length(values2$df$substrates[!is.na(values2$df$substrates)])
+        values2$df[1:count, ] = NA
+    })
+    
+    #reset every data when time was changed
+    reset_time = observeEvent(input$time, {
         count = length(values2$df$substrates[!is.na(values2$df$substrates)])
         values2$df[1:count, ] = NA
     })

@@ -7,7 +7,7 @@ simpleplot_Pt = function(enzymes, df_pt, e = 1, time_max = 500, time = 500, inte
   plot(x = -100, y = -100, type = "p",
        xlim = c(0, time), ylim = c(0, s_max), xlab = "", ylab = "")
   mtext("time (s)", side = 1, line = 3, cex = 1.5)
-  mtext("product concentration, [P] (μM)", side = 2, line = 3, cex = 1.5)
+  mtext("ratio of product concentration,[P]", side = 2, line = 3, cex = 1.5)
   # mtext(main_title, side = 3, line = 1.5, cex = 2.5)
   grid(col = "black")
   if(length(which(lines_to_plot == TRUE)) > 0){

@@ -37,8 +37,8 @@ plot_Pt = function(file, e = 1, i = 1,
   #the max concentration of product
   pinf = pinf_ratio * s_max
   #the max concentration of product within time which users choose
-  pt_max = pinf - kmapp * lambertW({(pinf/kmapp) * exp((pinf - vapp * time_max)/kmapp)})
-  ymax = 1.1 * s_max
+  pt_max = pinf - kmapp * lambertW({(pinf/kmapp) * exp((pinf - vapp * time)/kmapp)})
+  ymax = 1.1 * pt_max
   
   #checking if the first trial is done or not
   if(count == 0){
